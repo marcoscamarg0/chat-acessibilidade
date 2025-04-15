@@ -9,7 +9,6 @@ Este projeto é um chat web desenvolvido com foco em **acessibilidade digital**.
 - **Vite** — Empacotador leve e rápido
 - **Tailwind CSS** — Utilitário CSS para estilização rápida e responsiva
 - **Vercel AI SDK** — Integração com modelos de linguagem
-- **React Speech Recognition** — Reconhecimento de voz para entrada acessível
 - **OpenAI API** — Para respostas do assistente virtual
 
 ## 🧠 Funcionalidades
