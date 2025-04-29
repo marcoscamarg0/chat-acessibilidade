@@ -1,7 +1,7 @@
-// src/context/ThemeContext.jsx
+
 import { createContext, useState, useEffect, useContext } from 'react';
 
-// Modern color themes
+
 const themes = {
   light: {
     primary: '#6366f1', // Indigo
