@@ -1,12 +1,12 @@
 // src/components/ChatInterface.jsx
-import { useState, useRef, useEffect } from 'react';
-import { useTheme } from '../context/ThemeContext';
+import React, { useState, useRef, useEffect } from 'react';
+import { useTheme } from '../App'; // Atualizar a importação
 import TextToSpeech from './TextToSpeech';
 import VoiceControl from './VoiceControl';
 import { FaRobot, FaUser, FaMicrophone, FaPaperPlane, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 function ChatInterface() {
-  const { darkMode } = useTheme();
+  const { darkMode } = useTheme(); // Usar o hook do App.jsx
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
