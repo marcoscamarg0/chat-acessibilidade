@@ -1,67 +1,101 @@
-/* Estilos específicos da aplicação */
+/* Estilos globais e específicos da aplicação */
 
-/* Layout global */
+/* Layout flexível com design moderno */
 .app-container {
   display: flex;
   min-height: 100vh;
   background-color: var(--background);
   color: var(--text);
+  transition: all 0.3s ease;
 }
 
-/* Sidebar */
+/* Sidebar com design aprimorado */
 .sidebar {
-  width: 250px;
+  width: 260px;
   background-color: var(--background-alt);
   border-right: 1px solid var(--border);
-  padding: 20px;
-  transition: width 0.3s ease;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: 
+    width 0.3s ease, 
+    transform 0.3s ease,
+    background-color 0.3s ease;
 }
 
+/* Estado colapsado da sidebar */
 .sidebar.collapsed {
   width: 80px;
+  overflow: hidden;
 }
 
-/* Conteúdo principal */
+/* Conteúdo principal com layout responsivo */
 .main-content {
   flex-grow: 1;
-  padding: 20px;
+  padding: 1.5rem;
   background-color: var(--background);
-  transition: margin-left 0.3s ease;
+  transition: 
+    margin-left 0.3s ease,
+    padding 0.3s ease;
+  max-width: 100%;
 }
 
 .main-content.with-sidebar {
-  margin-left: 250px;
+  margin-left: 260px;
 }
 
-/* Cabeçalho de conteúdo */
+/* Cabeçalho de conteúdo com design moderno */
 .content-header {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeIn 0.4s ease-out;
 }
 
+/* Texto gradiente com animação suave */
 .gradient-text {
-  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  background: linear-gradient(45deg, var(--primary), var(--primary-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 700;
+  transition: all 0.3s ease;
 }
 
-/* Botão de menu móvel */
+.gradient-text:hover {
+  transform: scale(1.02);
+}
+
+/* Botão de menu móvel com design responsivo */
 .mobile-menu-toggle {
   position: fixed;
-  top: 15px;
-  right: 15px;
+  top: 1rem;
+  right: 1rem;
   z-index: 1000;
   background-color: var(--primary);
   color: white;
   border: none;
-  padding: 10px;
+  padding: 0.75rem;
   border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: 
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
-/* Skip link */
+.mobile-menu-toggle:hover {
+  background-color: var(--primary-dark);
+  transform: scale(1.1);
+}
+
+.mobile-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Skip link para acessibilidade */
 .skip-link {
   position: absolute;
   top: -40px;
@@ -69,27 +103,35 @@
   transform: translateX(-50%);
   background-color: var(--primary);
   color: white;
-  padding: 10px;
+  padding: 0.75rem 1rem;
   z-index: 1000;
   text-decoration: none;
-  transition: top 0.3s ease;
+  border-radius: 0 0 0.5rem 0.5rem;
+  transition: top 0.3s ease, background-color 0.3s ease;
 }
 
 .skip-link:focus {
   top: 0;
+  outline: 2px solid var(--primary-light);
 }
 
-/* Responsividade */
+/* Responsividade adaptativa */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
     left: 0;
     top: 0;
     height: 100vh;
-    width: 250px;
+    width: 280px;
+    background-color: var(--background-alt);
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 1000;
+    transition: 
+      transform 0.3s ease cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 0.3s ease;
+    z-index: 50;
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   .sidebar.open {
@@ -98,10 +140,28 @@
 
   .main-content {
     margin-left: 0 !important;
+    padding: 1rem;
+  }
+
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
-/* Tema escuro */
+/* Animações de entrada */
+@keyframes fadeIn {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tema escuro com transições suaves */
 .dark .app-container {
   background-color: var(--background);
   color: var(--text);
@@ -113,7 +173,30 @@
 }
 
 .dark .gradient-text {
-  background: linear-gradient(to right, var(--primary-light), var(--primary));
+  background: linear-gradient(45deg, var(--primary-light), var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Efeitos de interação */
+.sidebar, 
+.mobile-menu-toggle, 
+.gradient-text {
+  will-change: transform, background-color;
+}
+
+/* Acessibilidade de foco */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  transition: outline 0.2s ease;
+}
+
+/* Suporte para redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
