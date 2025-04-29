@@ -1,13 +1,13 @@
-// src/components/TextToSpeech.jsx
-import { useState, useEffect, useRef } from 'react';
-import { FaVolumeUp, FaStop, FaVolumeMute, FaPlayCircle } from 'react-icons/fa';
+import { useState, useRef, useEffect } from 'react';
+import { FaVolumeUp, FaStop, FaVolumeMute } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import { announceToScreenReader } from '../utils/accessibilityUtils';
 
 function TextToSpeech({
   text,
   autoPlay = false,
-  buttonType = 'icon', // icon, button, or toggle
-  buttonPosition = 'inline', // inline, absolute, or fixed
+  buttonType = 'icon', 
+  buttonPosition = 'inline', 
   language = 'pt-BR',
   darkMode = false,
   onStart,
@@ -18,22 +18,22 @@ function TextToSpeech({
   const synthRef = useRef(window.speechSynthesis);
   const utteranceRef = useRef(null);
 
-  // Check if speech synthesis is supported
+  // Verificar suporte de síntese de fala
   useEffect(() => {
     if (!window.speechSynthesis) {
       setIsSupported(false);
+      announceToScreenReader('Síntese de voz não suportada neste navegador');
     }
   }, []);
 
-  // Auto-play when text changes
+  // Auto-play quando o texto muda
   useEffect(() => {
     if (autoPlay && text && !isSpeaking) {
       speak();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, autoPlay]);
 
-  // Clean up on unmount
+  // Limpeza ao desmontar
   useEffect(() => {
     return () => {
       if (utteranceRef.current && synthRef.current.speaking) {
@@ -45,10 +45,12 @@ function TextToSpeech({
   const speak = () => {
     if (!text || !isSupported) return;
     
+    // Parar se já estiver falando
     if (synthRef.current.speaking) {
       synthRef.current.cancel();
       setIsSpeaking(false);
       onEnd?.();
+      announceToScreenReader('Leitura de texto interrompida');
       return;
     }
     
@@ -57,108 +59,114 @@ function TextToSpeech({
     utterance.rate = 1;
     utterance.pitch = 1;
     
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      onStart?.();
+      announceToScreenReader('Iniciando leitura de texto');
+    };
+    
     utterance.onend = () => {
       setIsSpeaking(false);
       onEnd?.();
+      announceToScreenReader('Leitura de texto finalizada');
     };
     
     utterance.onerror = () => {
       setIsSpeaking(false);
       onEnd?.();
+      announceToScreenReader('Erro na leitura de texto');
     };
     
     utteranceRef.current = utterance;
     synthRef.current.speak(utterance);
-    setIsSpeaking(true);
-    onStart?.();
   };
 
-  // Position classes
+  // Classes de posicionamento
   const positionClasses = {
     inline: '',
     absolute: 'absolute right-2 top-2',
     fixed: 'fixed right-4 bottom-4'
   };
 
-  // Button style based on type
-  let ButtonComponent;
-  switch (buttonType) {
-    case 'button':
-      ButtonComponent = (
+  // Renderização dos botões com diferentes estilos
+  const renderButton = () => {
+    const buttonStyles = {
+      icon: (
         <button
           onClick={speak}
-          className={`px-3 py-1 rounded ${
-            isSpeaking 
-              ? 'bg-red-500 text-white' 
+          className={`
+            p-2 rounded-full transition-colors duration-300 focus:outline-none 
+            ${isSpeaking 
+              ? 'text-red-500 animate-pulse' 
               : darkMode 
-                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                ? 'text-gray-300 hover:bg-gray-700 focus:ring-2 focus:ring-primary' 
+                : 'text-gray-700 hover:bg-gray-200 focus:ring-2 focus:ring-primary'
+            }
+          `}
           aria-label={isSpeaking ? "Parar leitura" : "Ler em voz alta"}
-          title={isSpeaking ? "Parar leitura" : "Ler em voz alta"}
+          disabled={!isSupported || !text}
+        >
+          {isSpeaking ? <FaStop size={16} /> : <FaVolumeUp size={16} />}
+        </button>
+      ),
+      button: (
+        <button
+          onClick={speak}
+          className={`
+            px-3 py-1 rounded transition-colors duration-300 focus:outline-none 
+            ${isSpeaking 
+              ? 'bg-red-500 text-white' 
+              : darkMode
+                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 focus:ring-2 focus:ring-primary'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-2 focus:ring-primary'
+            }
+          `}
           disabled={!isSupported || !text}
         >
           {isSpeaking ? "Parar" : "Ler em voz alta"}
         </button>
-      );
-      break;
-    case 'toggle':
-      ButtonComponent = (
+      ),
+      toggle: (
         <button
           onClick={speak}
-          className={`p-2 rounded-full ${
-            isSpeaking 
+          className={`
+            p-2 rounded-full transition-colors duration-300 focus:outline-none 
+            ${isSpeaking 
               ? 'bg-red-100 text-red-500' 
-              : darkMode 
-                ? 'bg-gray-700 text-gray-300' 
-                : 'bg-gray-200 text-gray-700'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              : darkMode
+                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 focus:ring-2 focus:ring-primary'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-2 focus:ring-primary'
+            }
+          `}
+          aria-pressed={isSpeaking}
           aria-label={isSpeaking ? "Parar leitura automática" : "Ativar leitura automática"}
-          title={isSpeaking ? "Parar leitura automática" : "Ativar leitura automática"}
-          disabled={!isSupported}
         >
           {isSpeaking ? <FaVolumeMute /> : <FaVolumeUp />}
-          <span className="sr-only">
-            {isSpeaking ? "Parar leitura automática" : "Ativar leitura automática"}
-          </span>
         </button>
-      );
-      break;
-    case 'icon':
-    default:
-      ButtonComponent = (
-        <button
-          onClick={speak}
-          className={`p-2 rounded-full ${
-            isSpeaking 
-              ? 'text-red-500' 
-              : darkMode 
-                ? 'text-gray-300 hover:text-gray-100' 
-                : 'text-gray-700 hover:text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          aria-label={isSpeaking ? "Parar leitura" : "Ler em voz alta"}
-          title={isSpeaking ? "Parar leitura" : "Ler em voz alta"}
-          disabled={!isSupported || !text}
-        >
-          {isSpeaking ? <FaStop size={16} /> : <FaVolumeUp size={16} />}
-          <span className="sr-only">
-            {isSpeaking ? "Parar leitura" : "Ler em voz alta"}
-          </span>
-        </button>
-      );
-  }
+      )
+    };
 
+    return buttonStyles[buttonType] || buttonStyles.icon;
+  };
+
+  // Se não for suportado, mostrar mensagem de erro
   if (!isSupported) {
     return (
-      <div className="text-xs text-red-500">
-        Síntese de voz não suportada neste navegador
+      <div 
+        className="text-xs text-red-500 p-2 rounded"
+        aria-label="Síntese de voz não suportada"
+      >
+        Síntese de voz indisponível
       </div>
     );
   }
 
   return (
-    <div className={`text-to-speech ${positionClasses[buttonPosition]}`}>
-      {ButtonComponent}
+    <div 
+      className={`text-to-speech ${positionClasses[buttonPosition]}`}
+      aria-live="polite"
+    >
+      {renderButton()}
     </div>
   );
 }
@@ -172,34 +180,6 @@ TextToSpeech.propTypes = {
   darkMode: PropTypes.bool,
   onStart: PropTypes.func,
   onEnd: PropTypes.func
-};
-
-// Static methods for external use
-TextToSpeech.speak = (text, language = 'pt-BR') => {
-  if (!window.speechSynthesis || !text) return null;
-  
-  const synth = window.speechSynthesis;
-  
-  if (synth.speaking) {
-    synth.cancel();
-  }
-  
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = language;
-  utterance.rate = 1;
-  utterance.pitch = 1;
-  
-  synth.speak(utterance);
-  return utterance;
-};
-
-TextToSpeech.stop = () => {
-  if (!window.speechSynthesis) return;
-  
-  const synth = window.speechSynthesis;
-  if (synth.speaking) {
-    synth.cancel();
-  }
 };
 
 export default TextToSpeech;
