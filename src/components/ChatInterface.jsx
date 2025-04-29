@@ -1,6 +1,6 @@
 // src/components/ChatInterface.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { useTheme } from '../App'; // Atualizar a importação
+import { useTheme } from '../context/ThemeContext';
 import TextToSpeech from './TextToSpeech';
 import VoiceControl from './VoiceControl';
 import { FaRobot, FaUser, FaMicrophone, FaPaperPlane, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';

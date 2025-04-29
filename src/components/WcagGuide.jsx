@@ -1,6 +1,6 @@
 // src/components/WcagGuide.jsx
 import { useState, useRef, useEffect } from 'react';
-import { useTheme } from '../App';
+import { useTheme } from '../context/ThemeContext';
 import { wcagRules } from '../utils/wcagRules';
 import { FaSearch, FaFilter, FaVolumeUp } from 'react-icons/fa';
 

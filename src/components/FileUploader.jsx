@@ -1,6 +1,6 @@
 // src/components/FileUploader.jsx
 import { useState, useRef } from 'react';
-import { useTheme } from '../App';
+import { useTheme } from '../context/ThemeContext';
 import { FaUpload, FaFile, FaCheck, FaTimes, FaSpinner, FaVolumeUp } from 'react-icons/fa';
 import TextToSpeech from './TextToSpeech';
 

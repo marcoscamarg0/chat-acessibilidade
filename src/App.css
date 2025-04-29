@@ -1,0 +1,157 @@
+/* src/App.css */
+:root {
+  /* Design System de Cores Moderno */
+  --primary: #6366f1;       /* Vibrant Indigo */
+  --primary-light: #a5b4fc;
+  --primary-dark: #4f46e5;
+  
+  --secondary: #10b981;     /* Emerald Green */
+  --secondary-light: #6ee7b7;
+  --secondary-dark: #047857;
+  
+  --accent: #ec4899;        /* Vibrant Pink */
+  
+  --background: #ffffff;
+  --background-alt: #f9fafb;
+  --background-secondary: #f3f4f6;
+  
+  --text: #111827;
+  --text-light: #4b5563;
+  --text-secondary: #6b7280;
+  
+  --border: #e5e7eb;
+  
+  --error: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  
+  /* Design Tokens Aprimorados */
+  --transition-speed: 0.3s;
+  --border-radius: 0.75rem;
+  --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Variáveis para tipografia responsiva */
+  --font-size-base: 16px;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.125rem;
+}
+
+/* Dark theme com cores soft e elegantes */
+.dark {
+  --primary: #818cf8;
+  --primary-light: #c7d2fe;
+  --primary-dark: #4f46e5;
+  
+  --secondary: #34d399;
+  --secondary-light: #6ee7b7;
+  --secondary-dark: #10b981;
+  
+  --accent: #f472b6;
+  
+  --background: #111827;
+  --background-alt: #1f2937;
+  --background-secondary: #374151;
+  
+  --text: #f9fafb;
+  --text-light: #e5e7eb;
+  --text-secondary: #d1d5db;
+  
+  --border: #4b5563;
+  
+  /* Ajustes de sombra para dark mode */
+  --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos globais para acessibilidade */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: 
+    background-color var(--transition-speed) ease,
+    color var(--transition-speed) ease,
+    border-color var(--transition-speed) ease;
+}
+
+/* Melhorias no layout responsivo */
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container principal flexível */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Estilos responsivos para sidebar */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform var(--transition-speed) ease;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Gradiente de texto para títulos */
+.gradient-text {
+  background: linear-gradient(45deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--primary-dark);
+}
+
+/* Botão de menu mobile */
+.mobile-menu-toggle {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 1100;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+}
+
+/* Animações suaves */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.main-content {
+  flex-grow: 1;
+  transition: margin-left var(--transition-speed) ease;
+  animation: fadeIn var(--transition-speed) ease;
+}
+
+.main-content.with-sidebar {
+  margin-left: 250px;
+}
