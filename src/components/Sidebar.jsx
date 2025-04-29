@@ -1,6 +1,6 @@
 // src/components/Sidebar.jsx
 import React, { useState } from 'react';
-import { useTheme } from '../App'; // Importando do App.jsx
+import { useTheme } from '../context/ThemeContext';
 import { FaComments, FaLink, FaFileCode, FaBook, FaMoon, FaSun, FaArrowLeft } from 'react-icons/fa';
 
 function Sidebar({ activeTool, setActiveTool }) {

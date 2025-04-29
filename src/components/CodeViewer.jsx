@@ -17,7 +17,7 @@ const IMPACT_STYLES = {
   },
   moderate: {
     text: 'text-yellow-500',
-    bg: 'rgba(255, 255, 0, 0.2)',W
+    bg: 'rgba(255, 255, 0, 0.2)',
     border: '#ffff00'
   },
   minor: {
