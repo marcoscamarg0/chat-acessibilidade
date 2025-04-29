@@ -71,49 +71,47 @@ function App() {
   };
 
   return (
-    <ThemeProvider>
-      <div className="app-container">
-        {/* Link de acessibilidade para pular navegação */}
-        <a href="#main-content" className="skip-link">
-          Pular para o conteúdo principal
-        </a>
+    <div className="app-container">
+      {/* Link de acessibilidade para pular navegação */}
+      <a href="#main-content" className="skip-link">
+        Pular para o conteúdo principal
+      </a>
 
-        {/* Botão de menu para dispositivos móveis */}
-        {isMobile && (
-          <button 
-            className="mobile-menu-toggle"
-            onClick={toggleSidebar}
-            aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
-            aria-expanded={sidebarOpen}
-          >
-            {sidebarOpen ? '✖' : '☰'}
-          </button>
-        )}
-
-        {/* Sidebar */}
-        {sidebarOpen && (
-          <Sidebar 
-            activeTool={activeTool} 
-            setActiveTool={(tool) => {
-              setActiveTool(tool);
-              
-              // Fechar sidebar em mobile após selecionar
-              if (isMobile) {
-                setSidebarOpen(false);
-              }
-            }}
-          />
-        )}
-
-        {/* Conteúdo principal */}
-        <main 
-          id="main-content" 
-          className={`main-content ${sidebarOpen && !isMobile ? 'with-sidebar' : ''}`}
+      {/* Botão de menu para dispositivos móveis */}
+      {isMobile && (
+        <button 
+          className="mobile-menu-toggle"
+          onClick={toggleSidebar}
+          aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={sidebarOpen}
         >
-          <ContentRenderer activeTool={activeTool} />
-        </main>
-      </div>
-    </ThemeProvider>
+          {sidebarOpen ? '✖' : '☰'}
+        </button>
+      )}
+
+      {/* Sidebar */}
+      {sidebarOpen && (
+        <Sidebar 
+          activeTool={activeTool} 
+          setActiveTool={(tool) => {
+            setActiveTool(tool);
+            
+            // Fechar sidebar em mobile após selecionar
+            if (isMobile) {
+              setSidebarOpen(false);
+            }
+          }}
+        />
+      )}
+
+      {/* Conteúdo principal */}
+      <main 
+        id="main-content" 
+        className={`main-content ${sidebarOpen && !isMobile ? 'with-sidebar' : ''}`}
+      >
+        <ContentRenderer activeTool={activeTool} />
+      </main>
+    </div>
   );
 }
 

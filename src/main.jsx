@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { StrictMode } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
 import './index.css'; // Estilo base
 import './App.css'; // Estilos específicos da aplicação
 import App from './App.jsx';
@@ -22,7 +23,9 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
-    <App />
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
   </StrictMode>
 );
 
