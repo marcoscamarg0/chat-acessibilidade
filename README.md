@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="(https://ibb.co/XfCY1rhH)" alt="Logo do Chat Acessibilidade" width="150" />
+  <img src="[logo.png](https://postimg.cc/jWd7525K)" alt="Logo do Chat Acessibilidade" width="150" />
 </p>
 
 <h1 align="center">Chat Acessibilidade ♿</h1>
