@@ -35,23 +35,34 @@ const calculateScore = (results) => {
 // Função para analisar a acessibilidade de uma URL
 export const analyzeAccessibility = async (url) => {
   try {
-    // Em um ambiente real, isso seria feito por uma API de backend
-    // Aqui estamos simulando o resultado
+
+
+    const response = await fetch('http://localhost:5000/api/accessibility/analyze-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url }),
+    });
     
-    // Simular um atraso para dar a impressão de análise
-    await new Promise(resolve => setTimeout(resolve, 2000));
+
+
+    if (!response.ok) {
+      throw new Error('Falha ao analisar URL');
+    }
     
-    // Gerar resultados simulados
-    const mockResults = generateMockResults();
-    
-    // Calcular pontuação
-    const score = calculateScore(mockResults);
-    
-    return {
-      url,
-      score,
-      ...mockResults
-    };
+
+
+
+
+
+
+
+
+
+
+
+    return await response.json();
   } catch (error) {
     console.error('Erro ao analisar acessibilidade:', error);
     throw error;
@@ -61,28 +72,39 @@ export const analyzeAccessibility = async (url) => {
 // Função para analisar a acessibilidade de um arquivo HTML
 export const analyzeHtmlAccessibility = async (htmlContent) => {
   try {
-    // Em um ambiente real, isso seria feito por uma API de backend
-    // Aqui estamos simulando o resultado
+
+
+    const response = await fetch('http://localhost:5000/api/accessibility/analyze-html', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ html: htmlContent }),
+    });
     
-    // Simular um atraso para dar a impressão de análise
-    await new Promise(resolve => setTimeout(resolve, 2000));
+
+
+    if (!response.ok) {
+      throw new Error('Falha ao analisar HTML');
+    }
     
-    // Gerar resultados simulados
-    const mockResults = generateMockResults();
-    
-    // Calcular pontuação
-    const score = calculateScore(mockResults);
-    
-    return {
-      score,
-      ...mockResults
-    };
+
+
+
+
+
+
+
+
+
+
+    return await response.json();
   } catch (error) {
     console.error('Erro ao analisar acessibilidade do HTML:', error);
     throw error;
   }
-};
 
+};
 // Função para gerar resultados simulados
 const generateMockResults = () => {
   // Selecionar aleatoriamente algumas regras WCAG para simular violações

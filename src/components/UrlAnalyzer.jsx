@@ -3,6 +3,48 @@ import { FaLink, FaSearch, FaMicrophone, FaCheckCircle, FaTimesCircle } from 're
 import VoiceControl from './VoiceControl';
 import TextToSpeech from './TextToSpeech';
 
+const analyzeUrl = async (url) => {
+  try {
+    // First fetch the content
+    const response = await fetch(url);
+    const content = await response.text();
+    
+    // Send to backend for analysis
+    const analysisResponse = await fetch('http://localhost:8000/api/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content })
+    });
+    
+    const result = await analysisResponse.json();
+    return result;
+  } catch (error) {
+    console.error('Error analyzing URL:', error);
+    throw error;
+  }
+};
+
+// In your chat component
+const getWCAGAnswer = async (question) => {
+  try {
+    const response = await fetch('http://localhost:8000/api/wcag/question', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ question })
+    });
+    
+    const result = await response.json();
+    return result.answer;
+  } catch (error) {
+    console.error('Error getting WCAG answer:', error);
+    throw error;
+  }
+};
+
 function UrlAnalyzer() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
