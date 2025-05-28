@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="[logo.png](https://postimg.cc/jWd7525K)" alt="Logo do Chat Acessibilidade" width="150" />
-</p>
-
 <h1 align="center">Chat Acessibilidade ♿</h1>
 
 <p align="center"><strong>Um assistente virtual desenvolvido com a missão de ser totalmente inclusivo e acessível para todos os usuários.</strong></p>
