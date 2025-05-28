@@ -1,78 +1,55 @@
+<h1 align="center">Chat Acessibilidade ♿</h1>
 
-# Chat Acessibilidade
+<p align="center"><strong>Um assistente virtual desenvolvido com a missão de ser totalmente inclusivo e acessível para todos os usuários.</strong></p>
 
-Este projeto é um chat web desenvolvido com foco em **acessibilidade digital**. O objetivo é oferecer uma interface acessível, limpa e inclusiva para usuários que utilizam tecnologias assistivas.
+<p align="center">
+  <a href="#-sobre-o-projeto">Sobre</a> •
+  <a href="#-funcionalidades">Funcionalidades</a> •
+  <a href="#-tecnologias">Tecnologias</a> •
+  <a href="#-como-começar">Como Começar</a> •
+  <a href="#-como-contribuir">Como Contribuir</a> •
+  <a href="#-licença">Licença</a>
+</p>
 
-## 🚀 Tecnologias Utilizadas
+---
 
-- **React** — Biblioteca JavaScript para interfaces de usuário
-- **Vite** — Empacotador leve e rápido
-- **Tailwind CSS** — Utilitário CSS para estilização rápida e responsiva
-- **Vercel AI SDK** — Integração com modelos de linguagem
-- **OpenAI API** — Para respostas do assistente virtual
+## 🎯 Sobre o Projeto
 
-## 🧠 Funcionalidades
+O **Chat Acessibilidade** é uma aplicação web que oferece uma interface de chat com um assistente virtual. O diferencial deste projeto é seu desenvolvimento fundamentado nas diretrizes de acessibilidade digital (WCAG).
 
-- Interface conversacional simples e acessível
-- Suporte a **entrada por voz**
-- Leitura de respostas em **voz sintetizada**
-- Design focado em **contraste, legibilidade e navegação via teclado**
-- Comunicação com o modelo de linguagem via API da OpenAI
+O objetivo é proporcionar uma experiência limpa, intuitiva e funcional, com foco especial em garantir que pessoas que utilizam tecnologias assistivas possam navegar de forma autônoma.
 
-## 📦 Instalação
+## ✨ Funcionalidades
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/marcoscamarg0/chat-acessibilidade.git
-   ```
+- 🤖 **Assistente Virtual Inteligente**: Alimentado pelo modelo Gemini do Google.
+- 🗣️ **Comando por Voz**: Envio de mensagens via microfone.
+- 🔊 **Leitura em Voz Alta**: As respostas são lidas automaticamente.
+- ♿ **Foco em Acessibilidade**:
+  - Navegação por teclado.
+  - Alto contraste e tipografia legível.
+  - Atributos ARIA para leitores de tela.
+  - Design responsivo.
 
-2. Instale as dependências:
-   ```bash
-   cd chat-acessibilidade
-   npm install
-   ```
+## 🚀 Tecnologias
 
-3. Crie um arquivo `.env` com sua chave da OpenAI:
-   ```
-   VITE_OPENAI_API_KEY=your-api-key
-   ```
+| Tecnologia          | Descrição                                                       |
+|---------------------|-----------------------------------------------------------------|
+| React               | Biblioteca JavaScript para interfaces de usuário.               |
+| Vite                | Ferramenta moderna de build para front-end.                     |
+| Tailwind CSS        | Framework de utilitários para estilização.                      |
+| Node.js + Express   | Ambiente de execução e servidor back-end.                       |
+| Google Generative AI| API Gemini para geração de linguagem natural.                   |
+| Vercel AI SDK       | Toolkit para interfaces de IA no front-end.                     |
 
-4. Rode o projeto:
-   ```bash
-   npm run dev
-   ```
+## 🏁 Como Começar
 
-## 🖼️ Estrutura de Pastas
+### Pré-requisitos
 
-```
-src/
-├── components/        # Componentes reutilizáveis (ex: Header, MessageBox)
-├── hooks/             # Hooks personalizados
-├── services/          # Comunicação com a API da OpenAI
-├── App.jsx            # Componente principal
-├── main.jsx           # Ponto de entrada
-```
+- Node.js (versão 18+)
+- npm ou yarn
 
-## ♿ Acessibilidade
+### Instalação
 
-O projeto segue boas práticas de acessibilidade como:
-
-- Navegação por teclado
-- ARIA roles nos componentes interativos
-- Contraste elevado e responsividade
-- Normas da WCAG 
-
-## 🔮 Futuras Melhorias
-
-- Tradução automática de mensagens
-- Suporte a múltiplos idiomas
-- Upload de arquivos de voz
-- Modo escuro
-
-## 🤝 Contribuições
-
-Contribuições são bem-vindas! Basta abrir uma issue ou um pull request com melhorias, correções ou sugestões.
-
-## 📄 Licença
-
-Este projeto está sob a licença [MIT](LICENSE).
+```bash
+git clone https://github.com/marcoscamarg0/chat-acessibilidade.git
+cd chat-acessibilidade
