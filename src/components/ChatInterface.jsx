@@ -3,14 +3,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import TextToSpeech from './TextToSpeech';
 import VoiceControl from './VoiceControl';
-import { FaRobot, FaUser, FaMicrophone, FaPaperPlane, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { getBotResponse } from '../services/chatbotService'; // Importar o serviço
+import { FaRobot, FaUser, FaPaperPlane, FaVolumeUp, FaVolumeMute, FaMicrophone } from 'react-icons/fa'; // Adicionado FaMicrophone se não estiver lá
 
 function ChatInterface() {
-  const { darkMode } = useTheme(); // Usar o hook do App.jsx
+  const { darkMode } = useTheme();
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      content: 'Olá! Sou o AssistAcess, seu assistente de acessibilidade. Posso analisar sites ou arquivos HTML, gerar relatórios de acessibilidade e responder dúvidas sobre WCAG. Como posso ajudar você hoje?',
+      content: 'Olá! Sou o AssistAcess, seu assistente de acessibilidade. Posso analisar sites (usando PageSpeed Insights), responder dúvidas sobre WCAG com a ajuda da IA Gemini e mais. Como posso ajudar você hoje?',
       timestamp: new Date()
     }
   ]);
@@ -20,61 +21,72 @@ function ChatInterface() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Handle voice input
   const handleVoiceInput = (transcript) => {
     setInputMessage(transcript);
+    // Opcional: enviar automaticamente após reconhecimento de voz
+    // if (transcript) handleSendMessage(transcript); // Cuidado para não criar loop
   };
 
-  // Handle sending message
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-    
-    // Add user message
+  const handleSendMessage = async (messageToSend = inputMessage) => { // Permite passar a mensagem diretamente
+    const trimmedMessage = messageToSend.trim();
+    if (!trimmedMessage) return;
+
     const userMessage = {
       sender: 'user',
-      content: inputMessage,
+      content: trimmedMessage,
       timestamp: new Date()
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
+    if (messageToSend === inputMessage) { // Só limpa o input se a mensagem veio dele
+        setInputMessage('');
+    }
     setIsTyping(true);
-    
-    // Simulate bot response
-    setTimeout(() => {
-      // Simulated response for demonstration
-      let botResponse = "Estou processando sua solicitação...";
-      
-      if (inputMessage.toLowerCase().includes('wcag')) {
-        botResponse = "WCAG (Web Content Accessibility Guidelines) são diretrizes que tornam o conteúdo da web mais acessível. A versão atual é WCAG 2.1 com níveis A, AA e AAA de conformidade.";
-      } else if (inputMessage.toLowerCase().includes('acessibilidade')) {
-        botResponse = "A acessibilidade web permite que pessoas com deficiências possam perceber, entender, navegar e interagir com sites e ferramentas online.";
-      } else if (inputMessage.toLowerCase().includes('analisar')) {
-        botResponse = "Para analisar um site, você pode usar a ferramenta 'Analisar URL' na barra lateral. Para analisar um arquivo HTML, use a opção 'Upload de HTML'.";
-      }
-      
+
+    try {
+      const botResponseText = await getBotResponse(trimmedMessage, 'chat'); // 'chat' é o activeTool
+
       const newBotMessage = {
         sender: 'bot',
-        content: botResponse,
+        content: botResponseText,
         timestamp: new Date()
       };
-      
       setMessages(prev => [...prev, newBotMessage]);
-      setIsTyping(false);
-      
-      // Auto read bot response if enabled
+
       if (autoRead) {
-        TextToSpeech.speak(botResponse);
+        // Tenta usar o componente TextToSpeech.speak se ele for exposto dessa forma
+        // ou usa a API nativa do navegador como fallback.
+        // Para usar TextToSpeech.speak, o componente TextToSpeech precisaria
+        // de um método estático ou ser instanciado de forma diferente.
+        // Por simplicidade, vamos usar a API nativa aqui se o TextToSpeech não tiver um método estático speak.
+        if (typeof window.speechSynthesis !== 'undefined' && SpeechSynthesisUtterance) {
+            const utterance = new SpeechSynthesisUtterance(botResponseText);
+            utterance.lang = 'pt-BR'; // Definir o idioma
+            window.speechSynthesis.speak(utterance);
+        } else if (TextToSpeech && typeof TextToSpeech.speak === 'function') {
+            // Se você modificou TextToSpeech para ter um método estático:
+            // TextToSpeech.speak(botResponseText, 'pt-BR');
+        }
       }
-    }, 1000);
+
+    } catch (error) {
+      console.error("Erro ao obter resposta do bot:", error);
+      const errorBotMessage = {
+        sender: 'bot',
+        content: "Desculpe, ocorreu um erro ao processar sua solicitação. Verifique o console para detalhes.",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorBotMessage]);
+    } finally {
+      setIsTyping(false);
+      inputRef.current?.focus(); // Foca no input após enviar
+    }
   };
 
-  // Handle keyboard submission
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -82,146 +94,160 @@ function ChatInterface() {
     }
   };
 
+  // O JSX do ChatInterface (return (...)) permanece o mesmo da sua versão anterior,
+  // apenas certifique-se que os componentes VoiceControl e TextToSpeech
+  // estejam corretamente integrados no JSX se você os utiliza.
+
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto w-full">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Chat AssistAcess</h2>
+      <div className="flex justify-between items-center mb-4 px-1">
+        <h2 className="text-xl font-semibold text-primary dark:text-primary-light">
+          <FaRobot className="inline mr-2 mb-1" /> AssistAcess Chat
+        </h2>
         <button
           onClick={() => setAutoRead(!autoRead)}
-          className={`flex items-center py-1 px-3 rounded-full text-sm transition-colors ${
+          className={`flex items-center py-1.5 px-3 rounded-full text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 dark:focus:ring-offset-gray-800 ${
             autoRead 
-              ? 'bg-primary bg-opacity-20 text-primary' 
-              : 'bg-background-secondary text-text-secondary'
+              ? 'bg-primary text-white focus:ring-primary-dark' 
+              : 'bg-background-secondary dark:bg-gray-700 text-text-secondary dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 focus:ring-gray-400'
           }`}
           aria-pressed={autoRead}
-          aria-label={autoRead ? "Desativar leitura automática" : "Ativar leitura automática"}
+          aria-label={autoRead ? "Desativar leitura automática de mensagens do bot" : "Ativar leitura automática de mensagens do bot"}
         >
-          {autoRead ? <FaVolumeUp className="mr-2" /> : <FaVolumeMute className="mr-2" />}
-          {autoRead ? "Leitura automática" : "Leitura automática"}
+          {autoRead ? <FaVolumeUp className="mr-2" aria-hidden="true" /> : <FaVolumeMute className="mr-2" aria-hidden="true" />}
+          <span>{autoRead ? "Leitura Ativa" : "Leitura Inativa"}</span>
         </button>
       </div>
       
       <div 
-        className="flex-1 overflow-y-auto p-2 sm:p-4 rounded-lg border border-border glass mb-4"
-        aria-live="polite"
-        aria-atomic="true"
-        aria-relevant="additions"
-        aria-label="Histórico de mensagens"
+        className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 rounded-lg border border-border dark:border-gray-700 bg-white dark:bg-gray-800 shadow-inner mb-4"
+        aria-live="polite" 
+        aria-atomic="false"
+        aria-relevant="additions text"
+        id="chat-history"
+        role="log"
+        aria-label="Histórico de mensagens do chat"
       >
         {messages.map((message, index) => (
           <div 
             key={index} 
-            className={`mb-4 ${message.sender === 'user' ? 'ml-auto max-w-[80%]' : 'mr-auto max-w-[80%]'}`}
-            role="article"
-            aria-label={`Mensagem de ${message.sender === 'user' ? 'você' : 'assistente'}`}
+            className={`flex w-full ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            role="article" // Cada mensagem é um artigo dentro do log
+            aria-labelledby={`message-sender-${index}`}
+            aria-describedby={`message-content-${index} message-timestamp-${index}`}
           >
-            <div className={`
-              flex items-start gap-2 
-              ${message.sender === 'user' ? 'flex-row-reverse' : ''}
-            `}>
+            <div className={`flex items-end gap-2 max-w-[85%] sm:max-w-[75%]`}>
+              {message.sender === 'bot' && (
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary bg-opacity-15 text-primary dark:bg-opacity-25 mb-4" aria-hidden="true">
+                  <FaRobot size={16} />
+                </div>
+              )}
               <div className={`
-                flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center 
+                relative px-3.5 py-2.5 rounded-t-xl
                 ${message.sender === 'user' 
-                  ? 'bg-secondary bg-opacity-20 text-secondary' 
-                  : 'bg-primary bg-opacity-20 text-primary'
+                  ? 'bg-primary text-white rounded-l-xl' 
+                  : 'bg-background-secondary dark:bg-gray-700 text-text dark:text-text-light rounded-r-xl'
                 }
+                shadow-md
               `}>
-                {message.sender === 'user' ? <FaUser size={14} /> : <FaRobot size={14} />}
-              </div>
-              
-              <div className={`
-                relative px-4 py-2 rounded-lg
-                ${message.sender === 'user' 
-                  ? 'bg-secondary text-white' 
-                  : 'bg-background-secondary dark:bg-background-alt'
-                }
-              `}>
-                <div className={`
-                  absolute top-2 w-3 h-3 rotate-45 
-                  ${message.sender === 'user' 
-                    ? 'right-[-6px] bg-secondary' 
-                    : 'left-[-6px] bg-background-secondary dark:bg-background-alt'
-                  }
-                `}></div>
-                <p>{message.content}</p>
-                
                 {message.sender === 'bot' && (
-                  <div className="absolute -right-8 top-2">
+                    <span id={`message-sender-${index}`} className="sr-only">Assistente diz:</span>
+                )}
+                {message.sender === 'user' && (
+                    <span id={`message-sender-${index}`} className="sr-only">Você diz:</span>
+                )}
+                {/* Renderizar o conteúdo, tratando quebras de linha */}
+                <p id={`message-content-${index}`} className="text-sm whitespace-pre-wrap break-words">
+                  {message.content}
+                </p>
+                <div id={`message-timestamp-${index}`} className="text-xs opacity-70 mt-1.5 text-right">
+                  {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </div>
+                 {/* Ícone de TTS para mensagens do bot */}
+                 {message.sender === 'bot' && (
+                  <div className="absolute -top-2 -right-2"> 
                     <TextToSpeech 
                       text={message.content}
                       buttonType="icon"
-                      buttonPosition="inline"
+                      // buttonPosition="inline" // Ou ajuste conforme o design
                       darkMode={darkMode}
+                      classNameForPositioning="p-1 bg-background-alt dark:bg-gray-600 rounded-full shadow" // Exemplo de classe para estilizar o botão TTS
                     />
                   </div>
                 )}
-                
-                <div className="text-xs text-text-secondary mt-1 text-right">
-                  {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                </div>
               </div>
+              {message.sender === 'user' && (
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-secondary bg-opacity-15 text-secondary dark:bg-opacity-25 mb-4" aria-hidden="true">
+                  <FaUser size={16} />
+                </div>
+              )}
             </div>
           </div>
         ))}
         
         {isTyping && (
-          <div className="mb-4 flex items-start gap-2">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary bg-opacity-20 text-primary">
-              <FaRobot size={14} />
-            </div>
-            <div className="relative px-4 py-2 rounded-lg bg-background-secondary dark:bg-background-alt">
-              <div className="absolute top-2 left-[-6px] w-3 h-3 rotate-45 bg-background-secondary dark:bg-background-alt"></div>
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 rounded-full bg-primary animate-bounce"></div>
-                <div className="w-2 h-2 rounded-full bg-primary animate-bounce delay-150"></div>
-                <div className="w-2 h-2 rounded-full bg-primary animate-bounce delay-300"></div>
+          <div className="flex items-end gap-2 max-w-[85%] sm:max-w-[75%] justify-start">
+             <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary bg-opacity-15 text-primary dark:bg-opacity-25 mb-4" aria-hidden="true">
+                <FaRobot size={16} />
               </div>
+            <div className="relative px-3.5 py-2.5 rounded-t-xl rounded-r-xl bg-background-secondary dark:bg-gray-700 text-text dark:text-text-light shadow-md">
+              <div className="flex space-x-1.5 items-center h-5"> {/* Altura fixa para os pontos */}
+                <div className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-primary-light animate-bounce delay-75"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-primary-light animate-bounce delay-150"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-primary-light animate-bounce delay-300"></div>
+              </div>
+              <div className="sr-only" aria-live="assertive">AssistAcess está digitando...</div>
             </div>
-            <div className="sr-only">AssistAcess está digitando...</div>
           </div>
         )}
-        
         <div ref={messagesEndRef} />
       </div>
       
-      <div className="relative glass rounded-lg border border-border p-2">
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg border border-border dark:border-gray-600 p-2 shadow-md flex items-center gap-2">
         <textarea
           ref={inputRef}
-          rows="2"
+          rows="1" // Começa com 1 linha, pode crescer
           value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
+          onChange={(e) => {
+            setInputMessage(e.target.value);
+            // Ajustar altura dinamicamente (opcional, requer mais lógica)
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
           onKeyPress={handleKeyPress}
-          placeholder="Digite sua mensagem ou fale utilizando o microfone..."
-          className="w-full p-3 pl-4 pr-24 bg-transparent resize-none focus:outline-none"
-          aria-label="Digite sua mensagem"
+          placeholder="Digite sua mensagem..."
+          className="flex-grow p-2.5 pr-20 bg-transparent resize-none focus:outline-none text-sm text-text dark:text-text-light placeholder-gray-500 dark:placeholder-gray-400 max-h-24 overflow-y-auto" // max-h para limitar crescimento
+          aria-label="Caixa de entrada de mensagem"
+          style={{ scrollbarWidth: 'thin' }} // Estilo da barra de rolagem para Firefox
         />
-        
-        <div className="absolute right-3 bottom-3 flex items-center space-x-2">
+        <div className="flex items-center">
           <VoiceControl
             onTranscriptChange={handleVoiceInput}
             buttonPosition="inline"
             language="pt-BR"
             darkMode={darkMode}
+            // Adicione classes para estilizar o botão do VoiceControl se necessário
+            // className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" 
           />
-          
           <button
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim()}
-            className={`p-2 rounded-full ${
-              inputMessage.trim() 
-                ? 'bg-primary text-white hover:bg-primary-dark' 
-                : 'bg-background-secondary text-text-secondary cursor-not-allowed'
+            onClick={() => handleSendMessage()} // Garante que chame com o inputMessage atual
+            disabled={!inputMessage.trim() || isTyping}
+            className={`p-2.5 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 dark:focus:ring-offset-gray-800 ${
+              (inputMessage.trim() && !isTyping)
+                ? 'bg-primary text-white hover:bg-primary-dark focus:ring-primary-dark' 
+                : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
             }`}
             aria-label="Enviar mensagem"
+            title="Enviar mensagem"
           >
-            <FaPaperPlane size={14} />
+            <FaPaperPlane size={16} />
           </button>
         </div>
-        
-        <p className="text-xs text-text-secondary mt-2">
-          Pressione Enter para enviar. Shift + Enter para nova linha.
-        </p>
       </div>
+       <p className="text-xs text-text-secondary dark:text-gray-400 mt-2 text-center px-2">
+          Pressione <kbd className="px-1.5 py-0.5 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-700 text-xs">Enter</kbd> para enviar.
+          Pressione <kbd className="px-1.5 py-0.5 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-700 text-xs">Shift</kbd> + <kbd className="px-1.5 py-0.5 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-700 text-xs">Enter</kbd> para nova linha.
+       </p>
     </div>
   );
 }
