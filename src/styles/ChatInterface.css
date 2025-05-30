@@ -1,0 +1,186 @@
+/* Adicione essas regras ao seu arquivo CSS existente */
+
+/* Animações */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para análise de acessibilidade */
+.analysis-result {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.dark .analysis-result {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.analysis-header {
+  margin-bottom: 1.5rem;
+}
+
+.analysis-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.dark .analysis-title {
+  color: #f9fafb;
+}
+
+.analysis-url {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+  word-break: break-all;
+}
+
+.dark .analysis-url {
+  color: #9ca3af;
+}
+
+.url-text {
+  font-family: monospace;
+  background: #e5e7eb;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+.dark .url-text {
+  background: #374151;
+}
+
+.analysis-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.dark .analysis-score {
+  background: #111827;
+  border-color: #374151;
+}
+
+.score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border: 4px solid;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.dark .score-circle {
+  background: #1f2937;
+}
+
+.score-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.dark .score-label {
+  color: #9ca3af;
+}
+
+.score-description {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.score-emoji {
+  font-size: 1.5rem;
+}
+
+.score-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dark .score-text {
+  color: #f9fafb;
+}
+
+.analysis-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.dark .section-header {
+  color: #f9fafb;
+}
+
+.violations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.violation-item {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.dark .violation-item {
+  background: #7f1d1d;
+  border-color: #991b1b;
+}
+
+.violation-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.violation-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #ef4444;
+  color: white;
