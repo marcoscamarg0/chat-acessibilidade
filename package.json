@@ -2,6 +2,7 @@
   "name": "chat-acessibilidade",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,17 +12,11 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",
     "axe-core": "^4.10.3",
-    "axios": "^1.9.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
+    "axios": "^1.8.3",
     "html-react-parser": "^5.2.3",
     "html2canvas": "^1.4.1",
-    "jsdom": "^26.1.0",
     "jspdf": "^3.0.1",
-    "multer": "^2.0.0",
     "prop-types": "^15.8.1",
-    "puppeteer": "^24.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
@@ -41,18 +36,5 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.3",
     "vite": "^6.2.0"
-  },
-  "description": "Este projeto é um chat web desenvolvido com foco em **acessibilidade digital**. O objetivo é oferecer uma interface acessível, limpa e inclusiva para usuários que utilizam tecnologias assistivas.",
-  "main": "eslint.config.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/marcoscamarg0/chat-acessibilidade.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/marcoscamarg0/chat-acessibilidade/issues"
-  },
-  "homepage": "https://github.com/marcoscamarg0/chat-acessibilidade#readme"
+  }
 }

@@ -15,24 +15,41 @@ const faqResponses = {
     'Tecnologias assistivas são dispositivos, softwares ou equipamentos que aumentam, mantêm ou melhoram as capacidades funcionais de pessoas com deficiências. Exemplos incluem leitores de tela, ampliadores de tela, softwares de reconhecimento de voz, teclados alternativos e dispositivos de apontamento alternativos.',
 };
 
+// Função para obter resposta do chatbot
 export const getBotResponse = async (message, activeTool) => {
-  try {
-    const response = await fetch('http://localhost:5000/api/chatbot/message', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message, activeTool }),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Falha ao obter resposta do chatbot');
+  // Normalizar a mensagem para facilitar a correspondência
+  const normalizedMessage = message.toLowerCase().trim();
+  
+  // Verificar se a mensagem corresponde a alguma FAQ
+  for (const [key, response] of Object.entries(faqResponses)) {
+    if (normalizedMessage.includes(key)) {
+      return response;
     }
-    
-    const data = await response.json();
-    return data.response;
-  } catch (error) {
-    console.error('Erro ao obter resposta do chatbot:', error);
-    return 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.';
   }
+  
+  // Verificar se a mensagem é sobre uma regra WCAG específica
+  const wcagRuleMatch = wcagRules.find(rule => 
+    normalizedMessage.includes(rule.id.toLowerCase()) || 
+    normalizedMessage.includes(rule.name.toLowerCase())
+  );
+  
+  if (wcagRuleMatch) {
+    return `**${wcagRuleMatch.id}: ${wcagRuleMatch.name}**\n\n${wcagRuleMatch.description}\n\nCritério WCAG: ${wcagRuleMatch.wcag}`;
+  }
+  
+  // Respostas baseadas na ferramenta ativa
+  if (activeTool === 'url') {
+    return 'Para analisar a acessibilidade de um site, insira a URL no campo à esquerda e clique em "Analisar".';
+  }
+  
+  if (activeTool === 'upload') {
+    return 'Para analisar a acessibilidade de um arquivo HTML, clique em "Selecionar Arquivo HTML" e escolha o arquivo que deseja analisar.';
+  }
+  
+  if (activeTool === 'guide') {
+    return 'O guia WCAG fornece diretrizes para tornar o conteúdo web mais acessível. Você pode fazer perguntas específicas sobre qualquer critério WCAG, como "O que é WCAG 2.1.1?" ou "Explique o princípio de perceptibilidade".';
+  }
+  
+  // Resposta padrão
+  return 'Sou seu assistente de acessibilidade. Posso ajudar com dúvidas sobre WCAG, analisar sites ou arquivos HTML, e fornecer recomendações para melhorar a acessibilidade. Como posso ajudar você hoje?';
 };
