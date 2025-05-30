@@ -37,9 +37,13 @@ const extractViolations = (lighthouseResult) => {
           id: auditKey,
           description: audit.title || 'Problema de acessibilidade',
           help: audit.description || 'Verifique as diretrizes WCAG',
+          helpUrl: audit.helpUrl || '',
           impact: audit.score === 0 ? 'serious' : 'moderate',
           tags: ['wcag2a', 'wcag2aa'],
-          nodes: audit.details?.items || []
+          nodes: audit.details?.items?.map(item => ({
+            target: [item.selector || 'elemento não identificado'],
+            failureSummary: item.failureSummary || audit.explanation || 'Falha detectada'
+          })) || []
         });
       }
     });
@@ -76,140 +80,249 @@ const extractPasses = (lighthouseResult) => {
   return passes;
 };
 
-// Função para gerar dados simulados
-const generateSimulatedData = (url) => {
-  const scores = [65, 72, 78, 85, 91, 68, 74, 82, 89, 95];
-  const randomScore = scores[Math.floor(Math.random() * scores.length)];
+// Função para extrair testes incompletos
+const extractIncomplete = (lighthouseResult) => {
+  const incomplete = [];
   
-  const allViolations = [
-    {
-      id: 'color-contrast',
-      description: 'Elementos não possuem contraste de cor suficiente',
-      help: 'Certifique-se de que o contraste entre o texto e o fundo atenda aos padrões WCAG AA (4.5:1 para texto normal)',
-      impact: 'serious',
-      tags: ['wcag2aa', 'wcag143']
-    },
-    {
-      id: 'image-alt',
-      description: 'Imagens não possuem texto alternativo',
-      help: 'Adicione atributos alt descritivos para todas as imagens informativas',
-      impact: 'critical',
-      tags: ['wcag2a', 'wcag111']
-    },
-    {
-      id: 'heading-order',
-      description: 'Cabeçalhos não seguem uma ordem lógica',
-      help: 'Organize os cabeçalhos em uma hierarquia lógica (h1, h2, h3, etc.) sem pular níveis',
-      impact: 'moderate',
-      tags: ['wcag2a', 'wcag131']
-    },
-    {
-      id: 'link-name',
-      description: 'Links não possuem texto descritivo',
-      help: 'Certifique-se de que todos os links tenham texto descritivo ou aria-label',
-      impact: 'serious',
-      tags: ['wcag2a', 'wcag244']
-    },
-    {
-      id: 'button-name',
-      description: 'Botões não possuem texto acessível',
-      help: 'Todos os botões devem ter texto visível ou aria-label descritivo',
-      impact: 'critical',
-      tags: ['wcag2a', 'wcag412']
+  try {
+    if (!lighthouseResult?.audits) {
+      return incomplete;
     }
-  ];
 
-  const allPasses = [
-    { id: 'document-title', description: 'Documento possui título' },
-    { id: 'html-has-lang', description: 'Elemento html possui atributo lang' },
-    { id: 'meta-viewport', description: 'Meta viewport configurado corretamente' },
-    { id: 'focus-traps', description: 'Não há armadilhas de foco' }
-  ];
+    Object.keys(lighthouseResult.audits).forEach(auditKey => {
+      const audit = lighthouseResult.audits[auditKey];
+      
+      if (audit && audit.scoreDisplayMode === 'manual') {
+        incomplete.push({
+          id: auditKey,
+          description: audit.title || 'Verificação manual necessária',
+          help: audit.description || 'Este item requer verificação manual'
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao extrair testes incompletos:', error);
+  }
 
-  // Selecionar violações baseadas na pontuação
-  const numViolations = randomScore >= 90 ? 1 : randomScore >= 70 ? 3 : 5;
-  const selectedViolations = allViolations.slice(0, numViolations);
+  return incomplete;
+};
+
+// Função para extrair testes não aplicáveis
+const extractInapplicable = (lighthouseResult) => {
+  const inapplicable = [];
   
-  return {
-    url: url,
-    score: randomScore,
-    violations: selectedViolations,
-    passes: allPasses,
-    timestamp: new Date().toISOString(),
-    isSimulated: true
-  };
+  try {
+    if (!lighthouseResult?.audits) {
+      return inapplicable;
+    }
+
+    Object.keys(lighthouseResult.audits).forEach(auditKey => {
+      const audit = lighthouseResult.audits[auditKey];
+      
+      if (audit && audit.scoreDisplayMode === 'notApplicable') {
+        inapplicable.push({
+          id: auditKey,
+          description: audit.title || 'Teste não aplicável'
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao extrair testes não aplicáveis:', error);
+  }
+
+  return inapplicable;
 };
 
 // Função principal para verificar acessibilidade
 export const checkAccessibility = async (url) => {
   try {
-    console.log('Iniciando análise de acessibilidade para:', url);
-    
-    // Sempre usar dados simulados por enquanto para evitar problemas de CORS e API
-    console.log('Usando dados simulados para demonstração...');
-    
-    // Simular delay de análise realista
-    await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
-    
-    const simulatedResult = generateSimulatedData(url);
-    console.log('Análise simulada concluída:', simulatedResult);
-    
-    return simulatedResult;
-
-    /* 
-    // Código para API real (descomentado quando necessário)
-    if (!PAGESPEED_API_KEY) {
-      console.warn('API Key do PageSpeed Insights não configurada.');
-      return generateSimulatedData(url);
+    // Validar URL
+    if (!url || typeof url !== 'string') {
+      throw new Error('URL inválida fornecida');
     }
 
-    const apiUrl = new URL(PAGESPEED_API_URL);
-    apiUrl.searchParams.append('url', url);
-    apiUrl.searchParams.append('key', PAGESPEED_API_KEY);
-    apiUrl.searchParams.append('category', 'accessibility');
-    apiUrl.searchParams.append('strategy', 'desktop');
+    // Normalizar URL
+    let normalizedUrl = url.trim();
+    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+      normalizedUrl = 'https://' + normalizedUrl;
+    }
 
-    console.log('Fazendo requisição para PageSpeed API...');
+    // Validar formato da URL
+    try {
+      new URL(normalizedUrl);
+    } catch (error) {
+      throw new Error('Formato de URL inválido');
+    }
+
+    // Se não tiver API key, usar análise simulada
+    if (!PAGESPEED_API_KEY) {
+      console.warn('API Key do PageSpeed não encontrada, usando análise simulada');
+      return generateMockAnalysis(normalizedUrl);
+    }
+
+    // Fazer requisição para PageSpeed Insights
+    const apiUrl = `${PAGESPEED_API_URL}?url=${encodeURIComponent(normalizedUrl)}&key=${PAGESPEED_API_KEY}&category=accessibility&strategy=desktop`;
     
-    const response = await fetch(apiUrl.toString());
+    const response = await fetch(apiUrl);
     
     if (!response.ok) {
-      throw new Error(`Erro da API PageSpeed: ${response.status} - ${response.statusText}`);
+      if (response.status === 400) {
+        throw new Error('URL não pode ser analisada. Verifique se o site está acessível publicamente.');
+      } else if (response.status === 403) {
+        throw new Error('Chave de API inválida ou limite de requisições excedido.');
+      } else if (response.status === 429) {
+        throw new Error('Muitas requisições. Tente novamente em alguns minutos.');
+      } else {
+        throw new Error(`Erro na API: ${response.status} - ${response.statusText}`);
+      }
     }
 
     const data = await response.json();
-    console.log('Resposta da API recebida:', data);
-
-    const lighthouseResult = data.lighthouseResult;
     
-    if (!lighthouseResult) {
-      console.error('Nenhum resultado Lighthouse na resposta da API:', data);
-      throw new Error('Falha ao obter resultados do Lighthouse.');
+    if (!data.lighthouseResult) {
+      throw new Error('Dados de análise não encontrados na resposta da API');
     }
 
+    // Processar resultados do Lighthouse
+    const lighthouseResult = data.lighthouseResult;
     const score = calculateLighthouseScore(lighthouseResult);
     const violations = extractViolations(lighthouseResult);
     const passes = extractPasses(lighthouseResult);
-    
-    console.log('Análise concluída:', { score, violations: violations.length, passes: passes.length });
+    const incomplete = extractIncomplete(lighthouseResult);
+    const inapplicable = extractInapplicable(lighthouseResult);
 
     return {
-      url: url,
-      score: score,
-      violations: violations,
-      passes: passes,
+      url: normalizedUrl,
+      score,
+      violations,
+      passes,
+      incomplete,
+      inapplicable,
       timestamp: new Date().toISOString(),
-      lighthouseResult: lighthouseResult
+      testEngine: 'Google Lighthouse via PageSpeed Insights'
     };
-    */
 
   } catch (error) {
-    console.error('Erro detalhado na verificação de acessibilidade:', error);
+    console.error('Erro na verificação de acessibilidade:', error);
     
-    // Em caso de erro, retornar dados simulados como fallback
-    console.log('Retornando dados simulados como fallback...');
-    return generateSimulatedData(url);
+    // Se for erro de rede ou API, tentar análise simulada
+    if (error.message.includes('fetch') || error.message.includes('API')) {
+      console.warn('Erro na API, usando análise simulada');
+      return generateMockAnalysis(url);
+    }
+    
+    throw error;
   }
+};
+
+// Função para gerar análise simulada quando a API não está disponível
+const generateMockAnalysis = (url) => {
+  const mockViolations = [
+    {
+      id: 'color-contrast',
+      description: 'Elementos não têm contraste de cor suficiente',
+      help: 'Certifique-se de que o contraste entre o texto e o fundo seja de pelo menos 4.5:1',
+      helpUrl: 'https://dequeuniversity.com/rules/axe/4.4/color-contrast',
+      impact: 'serious',
+      tags: ['wcag2aa', 'wcag143'],
+      nodes: [
+        {
+          target: ['button.primary'],
+          failureSummary: 'Contraste insuficiente entre texto e fundo'
+        }
+      ]
+    },
+    {
+      id: 'image-alt',
+      description: 'Imagens devem ter texto alternativo',
+      help: 'Adicione atributos alt descritivos para todas as imagens',
+      helpUrl: 'https://dequeuniversity.com/rules/axe/4.4/image-alt',
+      impact: 'critical',
+      tags: ['wcag2a', 'wcag111'],
+      nodes: [
+        {
+          target: ['img.hero-image'],
+          failureSummary: 'Imagem sem texto alternativo'
+        }
+      ]
+    }
+  ];
+
+  const mockPasses = [
+    {
+      id: 'document-title',
+      description: 'Documento tem um elemento <title>'
+    },
+    {
+      id: 'html-has-lang',
+      description: 'Elemento <html> tem um atributo lang'
+    }
+  ];
+
+  const mockIncomplete = [
+    {
+      id: 'color-contrast-enhanced',
+      description: 'Verificar contraste aprimorado manualmente',
+      help: 'Verifique se o contraste atende aos critérios AAA (7:1)'
+    }
+  ];
+
+  return {
+    url: url,
+    score: 65,
+    violations: mockViolations,
+    passes: mockPasses,
+    incomplete: mockIncomplete,
+    inapplicable: [],
+    timestamp: new Date().toISOString(),
+    testEngine: 'Análise Simulada (API não disponível)'
+  };
+};
+
+// Função para melhorar os resultados (se necessário)
+export const enhanceAccessibilityResult = (result) => {
+  // Esta função pode ser usada para adicionar informações extras aos resultados
+  return {
+    ...result,
+    enhanced: true,
+    recommendations: generateRecommendations(result)
+  };
+};
+
+// Função para gerar recomendações baseadas nos resultados
+const generateRecommendations = (result) => {
+  const recommendations = [];
+  
+  if (result.violations && result.violations.length > 0) {
+    const criticalCount = result.violations.filter(v => v.impact === 'critical').length;
+    const seriousCount = result.violations.filter(v => v.impact === 'serious').length;
+    
+    if (criticalCount > 0) {
+      recommendations.push({
+        priority: 'high',
+        title: 'Corrija problemas críticos primeiro',
+        description: `Foram encontrados ${criticalCount} problemas críticos que impedem o acesso ao conteúdo.`
+      });
+    }
+    
+    if (seriousCount > 0) {
+      recommendations.push({
+        priority: 'medium',
+        title: 'Resolva problemas sérios',
+        description: `${seriousCount} problemas sérios foram identificados e devem ser corrigidos.`
+      });
+    }
+  }
+  
+  if (result.score < 70) {
+    recommendations.push({
+      priority: 'high',
+      title: 'Melhore a pontuação geral',
+      description: 'A pontuação de acessibilidade está abaixo do recomendado (70+).'
+    });
+  }
+  
+  return recommendations;
 };
 
 // Função auxiliar para validar URL
