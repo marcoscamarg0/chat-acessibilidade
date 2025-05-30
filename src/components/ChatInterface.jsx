@@ -6,6 +6,7 @@ import VoiceControl from './VoiceControl';
 import ThemeToggle from './ThemeToggle';
 import { getBotResponse } from '../services/chatbotService';
 import { downloadChatPDF } from '../services/pdfGenerator';
+import { speechService } from '../services/speechService';
 import { 
   FaRobot, 
   FaUser, 
@@ -22,9 +23,13 @@ import {
   FaTimesCircle,
   FaGlobe,
   FaChartLine,
-  FaLightbulb
+  FaLightbulb,
+  FaCog,
+  FaPlay,
+  FaPause,
+  FaStop
 } from 'react-icons/fa';
-import './styles/ChatInterface.css'; // Import your CSS styles
+import './styles/ChatInterface.css';
 
 function ChatInterface() {
   const { darkMode } = useTheme();
@@ -42,9 +47,38 @@ function ChatInterface() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  // Estados para controle de voz
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [selectedVoice, setSelectedVoice] = useState(null);
+  const [showVoiceSettings, setShowVoiceSettings] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechRate, setSpeechRate] = useState(0.9);
+  const [speechPitch, setSpeechPitch] = useState(1.1);
+  
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
+
+  // Carregar vozes disponíveis
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = speechService.getAvailableVoices();
+      setAvailableVoices(voices);
+      
+      if (voices.length > 0 && !selectedVoice) {
+        const bestVoice = speechService.getBestVoice();
+        setSelectedVoice(bestVoice);
+        speechService.setVoice(bestVoice);
+      }
+    };
+
+    loadVoices();
+    
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, [selectedVoice]);
 
   // Detectar dispositivo móvel
   useEffect(() => {
@@ -61,25 +95,48 @@ function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Função para falar texto com configurações personalizadas
+  const speakText = (text) => {
+    speechService.speak(text, {
+      rate: speechRate,
+      pitch: speechPitch,
+      volume: 0.8,
+      language: 'pt-BR',
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false)
+    });
+  };
+
+  // Função para parar a fala
+  const stopSpeaking = () => {
+    speechService.stop();
+    setIsSpeaking(false);
+  };
+
+  // Função para alterar voz selecionada
+  const handleVoiceChange = (event) => {
+    const voiceName = event.target.value;
+    const voice = availableVoices.find(v => v.name === voiceName);
+    setSelectedVoice(voice);
+    speechService.setVoice(voice);
+  };
+
   // Função melhorada para detectar URLs
   const isValidURL = (string) => {
-    // Remover espaços em branco
     const trimmed = string.trim();
     
-    // Padrões mais específicos para URLs
     const urlPatterns = [
-      /^https?:\/\/.+\..+/i, // http:// ou https://
-      /^www\..+\..+/i, // www.
-      /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/i, // dominio.com
+      /^https?:\/\/.+\..+/i,
+      /^www\..+\..+/i,
+      /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/i,
     ];
     
-    // Verificar se corresponde a algum padrão
     const matchesPattern = urlPatterns.some(pattern => pattern.test(trimmed));
     
     if (!matchesPattern) return false;
     
     try {
-      // Tentar criar URL object
       new URL(trimmed.startsWith('http') ? trimmed : `https://${trimmed}`);
       return true;
     } catch (_) {
@@ -103,9 +160,9 @@ function ChatInterface() {
 
   // Função para obter cor baseada na pontuação
   const getScoreColor = (score) => {
-    if (score >= 90) return '#10b981'; // Verde
-    if (score >= 70) return '#f59e0b'; // Amarelo
-    return '#ef4444'; // Vermelho
+    if (score >= 90) return '#10b981';
+    if (score >= 70) return '#f59e0b';
+    return '#ef4444';
   };
 
   // Função para obter emoji baseado na pontuação
@@ -122,7 +179,6 @@ function ChatInterface() {
     
     return (
       <div className="analysis-result">
-        {/* Header da análise */}
         <div className="analysis-header">
           <div className="analysis-title">
             <FaChartLine style={{ marginRight: '0.5rem', color: '#3b82f6' }} />
@@ -135,7 +191,6 @@ function ChatInterface() {
           </div>
         </div>
 
-        {/* Score principal */}
         <div className="analysis-score">
           <div className="score-circle" style={{ borderColor: scoreColor }}>
             <span className="score-number" style={{ color: scoreColor }}>
@@ -153,7 +208,6 @@ function ChatInterface() {
           </div>
         </div>
 
-        {/* Problemas encontrados */}
         {result.violations && result.violations.length > 0 && (
           <div className="analysis-section violations">
             <div className="section-header">
@@ -187,7 +241,6 @@ function ChatInterface() {
           </div>
         )}
 
-        {/* Testes aprovados */}
         {result.passes && result.passes.length > 0 && (
           <div className="analysis-section passes">
             <div className="section-header">
@@ -197,7 +250,6 @@ function ChatInterface() {
           </div>
         )}
 
-        {/* Recomendações */}
         <div className="analysis-section recommendations">
           <div className="section-header">
             <FaLightbulb style={{ color: '#f59e0b', marginRight: '0.5rem' }} />
@@ -225,7 +277,6 @@ function ChatInterface() {
     try {
       const normalizedUrl = normalizeURL(url);
       
-      // Adicionar mensagem de análise em andamento
       const analysisMessage = {
         sender: 'bot',
         content: `Analisando a acessibilidade do site: ${normalizedUrl}`,
@@ -316,13 +367,9 @@ function ChatInterface() {
       };
       setMessages(prev => [...prev, newBotMessage]);
 
-      // Leitura automática apenas para respostas de texto
+      // Leitura automática com voz personalizada
       if (autoRead && botResponse.type === 'text') {
-        if (typeof window.speechSynthesis !== 'undefined' && SpeechSynthesisUtterance) {
-          const utterance = new SpeechSynthesisUtterance(botResponse.content);
-          utterance.lang = 'pt-BR';
-          window.speechSynthesis.speak(utterance);
-        }
+        speakText(botResponse.content);
       }
 
     } catch (error) {
@@ -455,6 +502,19 @@ function ChatInterface() {
         
         {/* Controles */}
         <div className="chat-controls">
+          {/* Botão de configurações de voz */}
+          <button
+            onClick={() => setShowVoiceSettings(!showVoiceSettings)}
+            className={`chat-button ${showVoiceSettings ? 'primary' : 'secondary'}`}
+            style={{ borderRadius: '1rem', padding: '0.5rem 0.75rem' }}
+            aria-pressed={showVoiceSettings}
+            aria-label="Configurações de voz"
+            title="Configurações de voz"
+          >
+            <FaCog style={{ marginRight: isMobile ? '0' : '0.5rem' }} size={14} />
+            {!isMobile && <span>Voz</span>}
+          </button>
+
           {/* Botão de leitura automática */}
           <button
             onClick={() => setAutoRead(!autoRead)}
@@ -466,6 +526,20 @@ function ChatInterface() {
             {autoRead ? <FaVolumeUp style={{ marginRight: '0.5rem' }} size={14} /> : <FaVolumeMute style={{ marginRight: '0.5rem' }} size={14} />}
             <span>{autoRead ? (isMobile ? "Ativa" : "Leitura Ativa") : (isMobile ? "Inativa" : "Leitura Inativa")}</span>
           </button>
+
+          {/* Controle de fala ativa */}
+          {isSpeaking && (
+            <button
+              onClick={stopSpeaking}
+              className="chat-button primary"
+              style={{ borderRadius: '1rem', padding: '0.5rem 0.75rem' }}
+              aria-label="Parar leitura"
+              title="Parar leitura"
+            >
+              <FaStop style={{ marginRight: isMobile ? '0' : '0.5rem' }} size={14} />
+              {!isMobile && <span>Parar</span>}
+            </button>
+          )}
 
           {/* Botão de download PDF */}
           <button
@@ -494,6 +568,131 @@ function ChatInterface() {
           )}
         </div>
       </div>
+      
+      {/* Painel de configurações de voz */}
+      {showVoiceSettings && (
+        <div className="voice-settings-panel" style={{
+          padding: '1rem',
+          backgroundColor: darkMode ? '#374151' : '#f9fafb',
+          borderBottom: `1px solid ${darkMode ? '#4b5563' : '#e5e7eb'}`,
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: '1rem',
+          alignItems: isMobile ? 'stretch' : 'center'
+        }}>
+          <div style={{ flex: 1 }}>
+            <label 
+              htmlFor="voice-select" 
+              style={{ 
+                display: 'block', 
+                fontSize: '0.875rem', 
+                fontWeight: '500', 
+                marginBottom: '0.5rem',
+                color: darkMode ? '#e5e7eb' : '#374151'
+              }}
+            >
+              Escolher Voz:
+            </label>
+            <select
+              id="voice-select"
+              value={selectedVoice?.name || ''}
+              onChange={handleVoiceChange}
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                border: `1px solid ${darkMode ? '#4b5563' : '#d1d5db'}`,
+                borderRadius: '0.375rem',
+                backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                color: darkMode ? '#e5e7eb' : '#374151',
+                fontSize: '0.875rem'
+              }}
+              aria-label="Selecionar voz para síntese"
+            >
+              {availableVoices.map((voice) => (
+                <option key={voice.name} value={voice.name}>
+                  {voice.name} ({voice.lang})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label 
+              htmlFor="speech-rate" 
+              style={{ 
+                display: 'block', 
+                fontSize: '0.875rem', 
+                fontWeight: '500', 
+                marginBottom: '0.5rem',
+                color: darkMode ? '#e5e7eb' : '#374151'
+              }}
+            >
+              Velocidade: {speechRate.toFixed(1)}x
+            </label>
+            <input
+              id="speech-rate"
+              type="range"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value={speechRate}
+              onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
+              style={{ width: '100%' }}
+              aria-label="Ajustar velocidade da fala"
+            />
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label 
+              htmlFor="speech-pitch" 
+              style={{ 
+                display: 'block', 
+                fontSize: '0.875rem', 
+                fontWeight: '500', 
+                marginBottom: '0.5rem',
+                color: darkMode ? '#e5e7eb' : '#374151'
+              }}
+            >
+              Tom: {speechPitch.toFixed(1)}
+            </label>
+            <input
+              id="speech-pitch"
+              type="range"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value={speechPitch}
+              onChange={(e) => setSpeechPitch(parseFloat(e.target.value))}
+              style={{ width: '100%' }}
+              aria-label="Ajustar tom da fala"
+            />
+          </div>
+
+          {selectedVoice && (
+            <div>
+              <button
+                onClick={() => speakText('Esta é uma demonstração da voz selecionada com as configurações atuais.')}
+                disabled={isSpeaking}
+                className="chat-button primary"
+                style={{ borderRadius: '0.5rem', padding: '0.5rem 1rem' }}
+                aria-label="Testar voz selecionada"
+              >
+                {isSpeaking ? (
+                  <>
+                    <FaSpinner style={{ marginRight: '0.5rem', animation: 'spin 1s linear infinite' }} size={14} />
+                    Falando...
+                  </>
+                ) : (
+                  <>
+                    <FaPlay style={{ marginRight: '0.5rem' }} size={14} />
+                    Testar
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
       
       {/* Área de mensagens */}
       <div 
@@ -545,16 +744,44 @@ function ChatInterface() {
                   {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </div>
                 
-                {/* Ícone de TTS para mensagens do bot */}
-                {message.sender === 'bot' && !message.isAnalyzing && message.type !== 'analysis' && (
-                  <div style={{ position: 'absolute', top: '-8px', right: '-8px' }}> 
-                    <TextToSpeech 
-                      text={message.content || ''}
-                      buttonType="icon"
-                      darkMode={darkMode}
-                      classNameForPositioning="chat-button secondary"
-                      style={{ padding: '0.375rem', backgroundColor: darkMode ? '#374151' : '#f3f4f6' }}
-                    />
+                {/* Controles de TTS para mensagens do bot */}
+                {message.sender === 'bot' && !message.isAnalyzing && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    top: '-8px', 
+                    right: '-8px',
+                    display: 'flex',
+                    gap: '0.25rem'
+                  }}> 
+                    {/* Botão de reproduzir/parar */}
+                    <button
+                      onClick={() => {
+                        if (isSpeaking) {
+                          stopSpeaking();
+                        } else {
+                          const textToSpeak = message.type === 'text' ? message.content : 
+                                            message.type === 'welcome' ? message.content :
+                                            'Análise de acessibilidade concluída. Verifique os resultados na tela.';
+                          speakText(textToSpeak);
+                        }
+                      }}
+                      className="chat-button secondary"
+                      style={{ 
+                        padding: '0.375rem', 
+                        backgroundColor: darkMode ? '#374151' : '#f3f4f6',
+                        borderRadius: '50%',
+                        minWidth: '32px',
+                        height: '32px'
+                      }}
+                      aria-label={isSpeaking ? "Parar leitura" : "Ler mensagem"}
+                      title={isSpeaking ? "Parar leitura" : "Ler mensagem"}
+                    >
+                      {isSpeaking ? (
+                        <FaStop size={12} />
+                      ) : (
+                        <FaVolumeUp size={12} />
+                      )}
+                    </button>
                   </div>
                 )}
               </div>
@@ -596,7 +823,6 @@ function ChatInterface() {
             value={inputMessage}
             onChange={(e) => {
               setInputMessage(e.target.value);
-              // Ajustar altura dinamicamente
               e.target.style.height = 'auto';
               const newHeight = Math.min(e.target.scrollHeight, isMobile ? 80 : 120);
               e.target.style.height = `${newHeight}px`;
@@ -686,17 +912,25 @@ function ChatInterface() {
               <span style={{ color: darkMode ? '#60a5fa' : '#3b82f6' }}>
                 🌐 URLs são analisadas automaticamente
               </span>
+              <span style={{ color: darkMode ? '#10b981' : '#059669' }}>
+                🎤 Voz humanizada disponível
+              </span>
             </>
           )}
         </div>
         {isMobile && (
-          <div style={{ marginTop: '0.25rem', color: darkMode ? '#60a5fa' : '#3b82f6' }}>
-            🌐 URLs são analisadas automaticamente
+          <div style={{ marginTop: '0.25rem' }}>
+            <div style={{ color: darkMode ? '#60a5fa' : '#3b82f6' }}>
+              🌐 URLs são analisadas automaticamente
+            </div>
+            <div style={{ color: darkMode ? '#10b981' : '#059669' }}>
+              🎤 Voz humanizada disponível
+            </div>
           </div>
         )}
       </div>
 
-      {/* Overlay para fechar fullscreen no mobile (se necessário) */}
+      {/* Overlay para fechar fullscreen no mobile */}
       {isFullscreen && (
         <button
           onClick={toggleFullscreen}
