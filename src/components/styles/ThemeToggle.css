@@ -1,0 +1,143 @@
+/* src/components/styles/ThemeToggle.css */
+.theme-toggle-container {
+  position: relative;
+  display: inline-block;
+}
+
+.theme-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm, 0.5rem);
+  padding: var(--spacing-sm, 0.5rem);
+  background-color: transparent;
+  color: var(--color-text-secondary, #64748b);
+  border: 1px solid transparent; /* Default transparent border */
+  border-radius: var(--border-radius-sm, 0.5rem);
+  cursor: pointer;
+  transition: background-color var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease), border-color var(--transition-fast, 0.15s ease);
+}
+
+.theme-toggle-button:hover {
+  background-color: var(--color-bg-tertiary, #f1f5f9);
+  color: var(--color-text-primary, #1e293b);
+}
+
+.theme-toggle-button:focus,
+.theme-toggle-button:focus-visible { /* Corrected: Added opening brace */
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 2px;
+  border-color: var(--color-accent, #3b82f6); /* Add border color on focus for clarity */
+}
+
+/* Specific dark mode styles for the button if not covered by variables */
+[data-theme="dark"] .theme-toggle-button {
+  color: var(--color-text-secondary, #cbd5e1);
+}
+
+[data-theme="dark"] .theme-toggle-button:hover {
+  background-color: var(--color-bg-tertiary, #334155);
+  color: var(--color-text-primary, #f8fafc);
+}
+
+.theme-dropdown-menu {
+  position: absolute;
+  right: 0;
+  margin-top: var(--spacing-xs, 0.25rem);
+  padding: var(--spacing-sm, 0.5rem);
+  background-color: var(--color-bg-primary, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: var(--border-radius, 0.75rem);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1));
+  z-index: 50;
+  min-width: 220px; /* Adjusted min-width */
+}
+
+.theme-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 1rem); /* Increased gap for icon and text */
+  width: 100%;
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem); /* More padding */
+  background-color: transparent;
+  color: var(--color-text-primary, #1e293b);
+  border: none;
+  border-radius: var(--border-radius-sm, 0.5rem);
+  cursor: pointer;
+  transition: background-color var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
+  text-align: left;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+}
+
+[data-theme="dark"] .theme-option {
+  color: var(--color-text-primary, #f8fafc);
+}
+
+.theme-option:hover {
+  background-color: var(--color-bg-tertiary, #f1f5f9);
+  color: var(--color-accent-hover, #2563eb);
+}
+
+[data-theme="dark"] .theme-option:hover {
+  background-color: var(--color-bg-tertiary, #334155);
+  color: var(--color-accent, #60a5fa);
+}
+
+.theme-option.active {
+  background-color: var(--color-accent, #3b82f6);
+  color: white; /* Ensure text is white on active accent background */
+}
+
+[data-theme="dark"] .theme-option.active {
+  background-color: var(--color-accent, #60a5fa);
+  color: var(--color-bg-primary); /* Or a dark text color that contrasts with dark accent */
+}
+
+
+.theme-option:focus,
+.theme-option:focus-visible {
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 1px;
+  background-color: var(--color-bg-tertiary, #f1f5f9); /* Keep hover style on focus */
+}
+
+[data-theme="dark"] .theme-option:focus,
+[data-theme="dark"] .theme-option:focus-visible {
+  background-color: var(--color-bg-tertiary, #334155);
+}
+
+
+.theme-option svg {
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  color: var(--color-text-secondary); /* Default icon color */
+}
+
+.theme-option:hover svg,
+.theme-option.active svg {
+  color: inherit; /* Icon color inherits from text color on hover/active */
+}
+
+
+.theme-dropdown-footer {
+  padding-top: var(--spacing-sm, 0.5rem);
+  margin-top: var(--spacing-sm, 0.5rem);
+  border-top: 1px solid var(--color-border-light, #f1f5f9);
+}
+
+[data-theme="dark"] .theme-dropdown-footer {
+  border-top-color: var(--color-border-light, #475569);
+}
+
+.theme-dropdown-footer p {
+  font-size: 0.75rem; /* 12px */
+  color: var(--color-text-muted, #94a3b8);
+  padding: 0 var(--spacing-sm, 0.5rem);
+  line-height: 1.4;
+}

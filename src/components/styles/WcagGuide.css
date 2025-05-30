@@ -1,0 +1,275 @@
+/* src/components/styles/WcagGuide.css */
+.wcag-guide-container {
+  padding: var(--spacing-xl, 2rem);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius, 0.75rem);
+  /* box-shadow: var(--shadow-md); */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.wcag-guide-header {
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  padding-bottom: var(--spacing-md, 1rem);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.wcag-guide-main-title { /* Renamed to avoid conflict with content-title */
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.wcag-guide-description {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.controls-container {
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.search-form-group { /* Specific class for search group */
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+.wcag-form-label { /* Specific label style */
+  display: block;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm, 0.5rem);
+}
+
+.search-input-wrapper {
+  position: relative;
+}
+
+.search-input-icon {
+  position: absolute;
+  left: var(--spacing-md, 1rem);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none; /* So it doesn't interfere with input click */
+}
+
+.search-input-wcag {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem; /* Padding for icon */
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.search-input-wcag:focus,
+.search-input-wcag:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb, 59, 130, 246), 0.25);
+}
+
+.principles-filter-section { /* For the principles filter block */
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+.principle-filter-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-sm, 0.5rem);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.principle-filter-header svg {
+  margin-right: var(--spacing-sm, 0.5rem);
+  color: var(--color-accent);
+}
+
+.principle-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm, 0.5rem);
+}
+
+.principle-filter-button {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius, 0.75rem); /* Pill shape */
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.principle-filter-button:hover {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-accent-hover);
+  color: var(--color-accent-hover);
+}
+
+.principle-filter-button.active {
+  background-color: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+}
+.principle-filter-button.active:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.principle-filter-button:focus,
+.principle-filter-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+
+.rules-list-container { /* Wrapper for results */
+  flex-grow: 1; /* Allow scroll if content overflows */
+  overflow-y: auto; /* Add scroll for long lists */
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1rem);
+}
+
+.no-rules-found {
+  padding: var(--spacing-xl, 2rem);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  text-align: center;
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border);
+}
+
+.rule-item {
+  padding: var(--spacing-md, 1rem);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  border: 1px solid var(--color-border-light);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+  cursor: pointer; /* If items are clickable/expandable */
+}
+
+.rule-item:hover {
+  background-color: var(--color-bg-tertiary);
+  box-shadow: var(--shadow-sm);
+}
+.rule-item:focus,
+.rule-item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: var(--color-accent);
+}
+
+.rule-item.active { /* For expanded/active rule */
+  background-color: var(--color-bg-tertiary); /* Or a slightly more prominent bg */
+  border-left: 4px solid var(--color-accent);
+  padding-left: calc(var(--spacing-md, 1rem) - 4px + var(--spacing-xs, 0.25rem)); /* Adjust padding */
+}
+
+.rule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm, 0.5rem);
+  gap: var(--spacing-sm, 0.5rem);
+}
+
+.rule-main-title { /* Title of the rule: ID - Name */
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.rule-actions { /* Container for tag and speak button */
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  flex-shrink: 0; /* Prevent shrinking on small screens */
+}
+
+.rule-level-tag {
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--border-radius-sm, 0.25rem);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white; /* Default for colored bg */
+}
+.rule-level-tag.level-a { background-color: var(--color-success); }
+.rule-level-tag.level-aa { background-color: var(--color-warning); }
+.rule-level-tag.level-aaa { background-color: var(--color-error); }
+
+
+.speak-rule-button {
+  padding: var(--spacing-xs, 0.25rem); /* Smaller padding for icon button */
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  border: 1px solid transparent;
+}
+.speak-rule-button:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-accent);
+}
+.speak-rule-button:focus,
+.speak-rule-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 0px;
+  border-color: var(--color-accent);
+}
+
+
+.rule-description-text { /* Description of the rule */
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-sm, 0.5rem);
+  line-height: 1.5;
+}
+
+.rule-details-section {
+  margin-top: var(--spacing-md, 1rem);
+  padding-top: var(--spacing-md, 1rem);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.rule-details-title {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs, 0.25rem);
+  font-size: 0.9rem;
+}
+
+.rule-details-text {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.rule-link-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-sm, 0.5rem);
+}
+
+.rule-external-link {
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.rule-external-link:hover {
+  text-decoration: underline;
+  color: var(--color-accent-hover);
+}

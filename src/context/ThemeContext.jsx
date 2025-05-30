@@ -1,6 +1,5 @@
-
+// src/context/ThemeContext.jsx
 import { createContext, useState, useEffect, useContext } from 'react';
-
 
 const themes = {
   light: {
@@ -48,35 +47,31 @@ const themes = {
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Initialize from localStorage or system preference
   const [darkMode, setDarkMode] = useState(() => {
-    // Check localStorage first
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       return savedTheme === 'dark';
     }
-    // Fall back to system preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  // Apply theme effect
   useEffect(() => {
-    // Toggle dark class on root element
+    const root = document.documentElement; // Cache documentElement
     if (darkMode) {
-      document.documentElement.classList.add('dark');
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark'); // Ensure data-theme is set for App.css
       localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light'); // Ensure data-theme is set for App.css
       localStorage.setItem('theme', 'light');
     }
 
-    // Apply CSS variables for current theme
     const currentTheme = darkMode ? themes.dark : themes.light;
     Object.entries(currentTheme).forEach(([key, value]) => {
-      document.documentElement.style.setProperty(`--${key}`, value);
+      root.style.setProperty(`--${key}`, value);
     });
     
-    // Set theme-color meta tag for mobile browsers
     const metaThemeColor = document.querySelector('meta[name=theme-color]');
     if (metaThemeColor) {
       metaThemeColor.setAttribute('content', currentTheme.background);

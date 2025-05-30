@@ -1,209 +1,210 @@
 // src/components/WcagGuide.jsx
 import { useState, useRef, useEffect } from 'react';
-import { useTheme } from '../context/ThemeContext';
+// Removed useTheme as it's not directly used in this component's JS logic for styling
+// The global theme will apply via CSS variables
 import { wcagRules } from '../utils/wcagRules';
-import { FaSearch, FaFilter, FaVolumeUp } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaVolumeUp, FaInfoCircle } from 'react-icons/fa'; // Added FaInfoCircle for placeholder
+import './styles/WcagGuide.css'; // Import the new CSS
 
 function WcagGuide() {
-  const { darkMode } = useTheme();
+  // const { darkMode } = useTheme(); // Not needed if CSS handles theming
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPrinciple, setSelectedPrinciple] = useState('all');
-  const [activeItem, setActiveItem] = useState(null);
+  const [activeItem, setActiveItem] = useState(null); // For expanding rule details
   const searchInputRef = useRef(null);
   
-  // Princípios do WCAG
   const principles = [
-    { id: 'all', name: 'Todos os princípios' },
+    { id: 'all', name: 'Todos os Princípios', description: 'Mostrar todos os critérios de sucesso.' },
     { id: '1', name: 'Perceptível', description: 'As informações e os componentes da interface devem ser apresentáveis aos usuários de maneira que eles possam perceber.' },
     { id: '2', name: 'Operável', description: 'Os componentes de interface e a navegação devem ser operáveis.' },
     { id: '3', name: 'Compreensível', description: 'As informações e operações da interface devem ser compreensíveis.' },
-    { id: '4', name: 'Robusto', description: 'O conteúdo deve ser robusto o suficiente para ser interpretado de forma confiável por diversos agentes de usuário.' }
+    { id: '4', name: 'Robusto', description: 'O conteúdo deve ser robusto o suficiente para ser interpretado de forma confiável por diversos agentes de usuário, incluindo tecnologias assistivas.' }
   ];
   
-  // Filtrar regras com base na pesquisa e princípio selecionado
   const filteredRules = wcagRules.filter(rule => {
+    const normalizedSearchTerm = searchTerm.toLowerCase();
     const matchesSearch = searchTerm === '' || 
-      rule.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rule.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rule.description.toLowerCase().includes(searchTerm.toLowerCase());
+      rule.id.toLowerCase().includes(normalizedSearchTerm) ||
+      rule.name.toLowerCase().includes(normalizedSearchTerm) ||
+      rule.description.toLowerCase().includes(normalizedSearchTerm);
     
     const matchesPrinciple = selectedPrinciple === 'all' || 
-      rule.id.startsWith(selectedPrinciple);
+      rule.id.startsWith(selectedPrinciple + '.'); // Ensure it matches "1." not "10." if "1" is selected
     
     return matchesSearch && matchesPrinciple;
   });
   
-  // Função para ler o conteúdo usando síntese de voz
   const speakRule = (rule) => {
-    if ('speechSynthesis' in window) {
-      const text = `Regra ${rule.id}: ${rule.name}. ${rule.description}. Nível: ${rule.wcag}`;
+    if ('speechSynthesis' in window && rule) { // Check if rule is defined
+      const text = `Regra ${rule.id}: ${rule.name}. ${rule.description}. Nível de conformidade: ${rule.wcag}`;
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'pt-BR';
+      // Stop any previous speech
+      window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     }
   };
   
-  // Função para retornar o estilo da tag baseado no nível WCAG
-  const getTagStyle = (level) => {
+  const getTagLevelClass = (level) => {
     switch(level) {
-      case 'A': return 'tag-a';
-      case 'AA': return 'tag-aa';
-      case 'AAA': return 'tag-aaa';
+      case 'A': return 'level-a';
+      case 'AA': return 'level-aa';
+      case 'AAA': return 'level-aaa';
       default: return '';
     }
   };
   
-  // Foco no campo de pesquisa ao montar o componente
   useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
+    searchInputRef.current?.focus();
   }, []);
   
-  // Gerenciar eventos de teclado para navegação com Tab
   const handleKeyDown = (e, action, param) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       if (action === 'select-principle') {
         setSelectedPrinciple(param);
-      } else if (action === 'speak-rule') {
+      } else if (action === 'speak-rule' && param) { // Check param
         speakRule(param);
-      } else if (action === 'set-active') {
-        setActiveItem(activeItem === param ? null : param);
+      } else if (action === 'toggle-active' && param) { // Check param
+        setActiveItem(activeItem === param.id ? null : param.id);
       }
     }
   };
 
+  const toggleActiveItem = (ruleId) => {
+    setActiveItem(activeItem === ruleId ? null : ruleId);
+  };
+
   return (
-    <div className="wcag-guide" aria-labelledby="wcag-guide-title">
-      <header className="mb-6">
-        <h2 id="wcag-guide-title" className="text-2xl font-bold mb-2">Guia WCAG</h2>
-        <p className="text-text-light">
-          Explore as diretrizes de acessibilidade para conteúdo web (WCAG 2.1)
+    <div className="wcag-guide-container" aria-labelledby="wcag-guide-main-title">
+      <header className="wcag-guide-header">
+        <h2 id="wcag-guide-main-title" className="wcag-guide-main-title">Guia de Referência WCAG 2.1</h2>
+        <p className="wcag-guide-description">
+          Explore os critérios de sucesso das Diretrizes de Acessibilidade para Conteúdo Web.
         </p>
       </header>
       
-      <div className="search-filter-container mb-6">
-        {/* Campo de pesquisa acessível */}
-        <div className="form-group mb-4">
-          <label htmlFor="wcag-search" className="form-label">
-            Pesquisar critérios WCAG
+      <div className="controls-container">
+        <div className="search-form-group">
+          <label htmlFor="wcag-search-input" className="wcag-form-label">
+            Pesquisar Critérios WCAG
           </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-light">
-              <FaSearch aria-hidden="true" />
-            </div>
+          <div className="search-input-wrapper">
+            <FaSearch className="search-input-icon" aria-hidden="true" />
             <input
-              id="wcag-search"
+              id="wcag-search-input"
               ref={searchInputRef}
               type="search" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Pesquisar por ID, nome ou descrição..."
-              className="form-input pl-10"
-              aria-controls="wcag-results"
+              placeholder="Ex: '1.1.1', 'imagens', 'contraste'..."
+              className="search-input-wcag"
+              aria-controls="wcag-rules-list"
+              aria-label="Campo de pesquisa para critérios WCAG"
             />
           </div>
         </div>
         
-        {/* Filtro por princípio */}
-        <div className="principles-filter mb-4">
-          <div className="flex items-center mb-2">
-            <FaFilter className="mr-2 text-primary" aria-hidden="true" />
-            <span className="font-medium">Filtrar por princípio</span>
+        <div className="principles-filter-section">
+          <div className="principle-filter-header">
+            <FaFilter aria-hidden="true" />
+            <span>Filtrar por Princípio WCAG</span>
           </div>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Filtrar por princípio">
+          <div className="principle-filter-group" role="radiogroup" aria-label="Filtrar por princípio WCAG">
             {principles.map(principle => (
-              <div
+              <button
                 key={principle.id}
                 role="radio"
                 aria-checked={selectedPrinciple === principle.id}
                 tabIndex={0}
-                className={`px-3 py-2 rounded-full text-sm cursor-pointer transition-colors ${
-                  selectedPrinciple === principle.id 
-                    ? 'bg-primary text-white' 
-                    : 'bg-background-alt hover:bg-primary-transparent'
-                }`}
+                className={`principle-filter-button ${selectedPrinciple === principle.id ? 'active' : ''}`}
                 onClick={() => setSelectedPrinciple(principle.id)}
                 onKeyDown={(e) => handleKeyDown(e, 'select-principle', principle.id)}
-                aria-label={principle.name}
-                title={principle.description}
+                title={principle.description || principle.name} /* Add tooltip from description */
               >
                 {principle.name}
-              </div>
+              </button>
             ))}
           </div>
         </div>
       </div>
       
-      {/* Resultados */}
       <div 
-        id="wcag-results" 
-        className="wcag-results space-y-4" 
+        id="wcag-rules-list" 
+        className="rules-list-container"
+        role="region"
         aria-live="polite" 
-        aria-busy={false}
+        aria-busy={false} /* Set to true during filtering if it's slow */
+        aria-label="Lista de critérios WCAG filtrados"
       >
         {filteredRules.length === 0 ? (
-          <div className="p-4 bg-background-alt rounded-lg text-center">
-            <p className="text-text-light">Nenhum critério encontrado para a pesquisa atual.</p>
+          <div className="no-rules-found">
+            <FaInfoCircle className="drop-zone-icon" /> {/* Re-use icon style */}
+            <p>Nenhum critério encontrado para sua pesquisa ou filtro.</p>
+            <p className="drop-zone-prompt">Tente termos diferentes ou ajuste os filtros.</p>
           </div>
         ) : (
-          <div>
-            <p className="sr-only">Encontrados {filteredRules.length} critérios</p>
+          <div className="rules-list">
+            <p className="sr-only">Encontrados {filteredRules.length} critérios.</p>
             {filteredRules.map(rule => (
               <div 
                 key={rule.id} 
-                className={`wcag-rule p-4 rounded-lg border border-border transition-all ${
-                  activeItem === rule.id ? 'bg-primary-transparent' : 'bg-background'
-                } ${darkMode ? 'hover:bg-background-alt' : 'hover:bg-background-secondary'}`}
+                className={`rule-item ${activeItem === rule.id ? 'active' : ''}`}
                 tabIndex={0}
-                onClick={() => setActiveItem(activeItem === rule.id ? null : rule.id)}
-                onKeyDown={(e) => handleKeyDown(e, 'set-active', rule.id)}
+                onClick={() => toggleActiveItem(rule.id)}
+                onKeyDown={(e) => handleKeyDown(e, 'toggle-active', rule)}
                 aria-expanded={activeItem === rule.id}
+                aria-controls={`details-${rule.id}`}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold">
+                <div className="rule-header">
+                  <h3 className="rule-main-title">
                     {rule.id} - {rule.name}
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <span className={`tag ${getTagStyle(rule.wcag)}`}>
+                  <div className="rule-actions">
+                    <span className={`rule-level-tag ${getTagLevelClass(rule.wcag)}`}>
                       Nível {rule.wcag}
                     </span>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
+                        e.stopPropagation(); // Prevent rule item click
                         speakRule(rule);
                       }}
-                      className="p-2 rounded-full hover:bg-primary-transparent text-primary"
-                      aria-label={`Ler em voz alta: ${rule.id} - ${rule.name}`}
-                      title="Ler em voz alta"
+                      className="speak-rule-button"
+                      aria-label={`Ouvir descrição da regra ${rule.id}: ${rule.name}`}
+                      title="Ouvir descrição da regra"
                     >
                       <FaVolumeUp aria-hidden="true" />
                     </button>
                   </div>
                 </div>
                 
-                <p className="mb-2 text-text-light">{rule.description}</p>
+                <p className="rule-description-text">{rule.description}</p>
                 
                 {activeItem === rule.id && (
-                  <div className="mt-4 pt-3 border-t border-border" aria-hidden={activeItem !== rule.id}>
-                    <h4 className="font-medium mb-2">Como implementar:</h4>
-                    <p className="text-sm text-text-light">
-                      Para atender ao critério {rule.id}, certifique-se de que seu conteúdo web 
+                  <div 
+                    id={`details-${rule.id}`}
+                    className="rule-details-section" 
+                    aria-hidden={activeItem !== rule.id}
+                  >
+                    <h4 className="rule-details-title">Como Implementar e Entender Melhor:</h4>
+                    <p className="rule-details-text">
+                      Para o critério {rule.id} ({rule.name}), é fundamental que seu conteúdo web 
                       {rule.wcag === 'A' 
-                        ? ' cumpra este requisito básico de acessibilidade.' 
+                        ? ' atenda a este requisito básico para garantir um nível mínimo de acessibilidade.' 
                         : rule.wcag === 'AA' 
-                          ? ' vá além do básico e garanta uma boa experiência para usuários com deficiência.' 
-                          : ' forneça o mais alto nível de acessibilidade possível.'}
+                          ? ' siga esta recomendação para uma acessibilidade robusta, que é o nível de conformidade geralmente visado.' 
+                          : ' alcance este nível avançado de acessibilidade para a experiência mais inclusiva possível.'}
+                      {' '}Consulte o link abaixo para obter técnicas detalhadas e exemplos.
                     </p>
-                    <div className="flex justify-end mt-3">
+                    <div className="rule-link-container">
                       <a 
-                        href={`https://www.w3.org/WAI/WCAG21/Understanding/${rule.id.toLowerCase()}`} 
+                        href={`https://www.w3.org/WAI/WCAG21/Understanding/${rule.name.toLowerCase().replace(/\s+/g, '-').replace(/[():,]/g, '')}.html`} // Basic slugify
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-primary hover:underline text-sm"
+                        className="rule-external-link"
+                        onClick={(e) => e.stopPropagation()} // Prevent rule item click
                       >
-                        Mais informações (W3C)
+                        Ver detalhes no site da W3C <span aria-hidden="true">→</span>
                       </a>
                     </div>
                   </div>

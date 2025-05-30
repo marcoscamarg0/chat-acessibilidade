@@ -1,0 +1,414 @@
+/* src/components/styles/FileUploader.css */
+.file-uploader-container {
+  padding: var(--spacing-xl, 2rem);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius, 0.75rem);
+  /* box-shadow: var(--shadow-md); removed as it's inside content-body which might have shadow */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.file-uploader-header {
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  padding-bottom: var(--spacing-md, 1rem);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.file-uploader-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
+  gap: var(--spacing-sm, 0.5rem);
+}
+
+.file-uploader-title {
+  font-size: 1.75rem; /* Slightly smaller than main content title */
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.file-uploader-description {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin-top: var(--spacing-xs, 0.25rem);
+}
+
+.auto-read-toggle {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem);
+  border-radius: var(--border-radius, 0.75rem); /* More rounded */
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.auto-read-toggle.active {
+  background-color: var(--color-accent);
+  color: white; /* Assuming accent contrasts with white */
+  border-color: var(--color-accent-hover);
+}
+
+.auto-read-toggle.inactive {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+.auto-read-toggle:hover {
+  opacity: 0.8;
+}
+.auto-read-toggle svg {
+  margin-right: var(--spacing-xs, 0.25rem);
+}
+
+
+.upload-form-container {
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.file-uploader-label {
+  display: block;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm, 0.5rem);
+}
+
+.drop-zone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  padding: var(--spacing-xl, 2rem);
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--color-bg-secondary);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+  border-color: var(--color-accent);
+  background-color: var(--color-bg-tertiary);
+}
+
+.drop-zone:focus,
+.drop-zone:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+}
+
+.drop-zone-icon {
+  font-size: 2.5rem; /* Larger icon */
+  margin: 0 auto var(--spacing-md, 1rem) auto;
+  color: var(--color-text-muted);
+}
+.drop-zone:hover .drop-zone-icon,
+.drop-zone.drag-over .drop-zone-icon {
+  color: var(--color-accent);
+}
+
+
+.drop-zone-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.drop-zone-prompt {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.file-info-bar {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md, 1rem);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  border: 1px solid var(--color-border-light);
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.file-info-icon {
+  color: var(--color-accent);
+  margin-right: var(--spacing-sm, 0.5rem);
+  font-size: 1.25rem;
+}
+
+.file-info-name {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.file-info-size {
+  margin-left: var(--spacing-sm, 0.5rem);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.error-message-fileuploader {
+  background-color: rgba(var(--color-error-rgb, 239, 68, 68), 0.1);
+  color: var(--color-error, #ef4444);
+  padding: var(--spacing-md, 1rem);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  border: 1px solid var(--color-error, #ef4444);
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  font-size: 0.9rem;
+}
+
+.analyze-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.analyze-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  padding: 0.75rem 1.5rem; /* Standard button padding */
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm, 0.5rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.analyze-button:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+}
+
+.analyze-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.analyze-button svg { /* For spinner */
+  animation: spin 1s linear infinite;
+}
+
+.loading-indicator-fileuploader {
+  padding: var(--spacing-xl, 2rem);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  text-align: center;
+  border: 1px solid var(--color-border-light);
+}
+
+.loading-indicator-fileuploader svg { /* Spinner icon */
+  font-size: 2.5rem;
+  color: var(--color-accent);
+  margin: 0 auto var(--spacing-md, 1rem) auto;
+  animation: spin 1s linear infinite;
+}
+
+.loading-indicator-fileuploader .loading-text {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.loading-indicator-fileuploader .loading-subtext {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* Report Section */
+.report-section-fileuploader {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius, 0.75rem);
+  overflow: hidden;
+  background-color: var(--color-bg-primary);
+  margin-top: var(--spacing-lg, 1.5rem);
+  box-shadow: var(--shadow-sm);
+}
+
+.report-header {
+  padding: var(--spacing-md, 1rem);
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.report-header-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.report-body {
+  padding: var(--spacing-lg, 1.5rem);
+}
+
+.report-score-display {
+  text-align: center;
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.report-score-wrapper {
+  display: inline-block;
+  padding: var(--spacing-lg, 1.5rem);
+  border-radius: 50%;
+  background-color: var(--color-bg-secondary);
+  border: 4px solid; /* Color will be set by inline style */
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-score-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  /* Color set by inline style */
+}
+
+.report-score-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs, 0.25rem);
+}
+
+.report-score-description {
+  margin-top: var(--spacing-sm, 0.5rem);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.report-violations-header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+.report-violations-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1rem);
+}
+
+.report-violation-item {
+  padding: var(--spacing-md, 1rem);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  border-left-width: 4px;
+  border-left-style: solid;
+  /* border-left-color will be impact specific */
+  box-shadow: var(--shadow-sm);
+}
+
+.violation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm, 0.5rem);
+  flex-wrap: wrap;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.violation-title {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.violation-impact-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--border-radius, 0.75rem); /* Pill shape */
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white; /* Default, overridden by specific impact */
+}
+.violation-impact-badge.critical { background-color: var(--color-error); }
+.violation-impact-badge.serious { background-color: var(--color-warning); }
+.violation-impact-badge.moderate { background-color: var(--color-info, #3b82f6); } /* Assuming an info color variable */
+.violation-impact-badge.minor {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+
+.violation-description {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm, 0.5rem);
+  font-size: 0.9rem;
+}
+
+.violation-code-snippet-container {
+  background-color: var(--color-bg-primary); /* Contrast with item background */
+  padding: var(--spacing-sm, 0.5rem);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  margin-bottom: var(--spacing-sm, 0.5rem);
+  border: 1px solid var(--color-border-light);
+}
+
+.violation-code-snippet-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs, 0.25rem);
+}
+
+.violation-code-snippet {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  display: block;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  padding: var(--spacing-xs, 0.25rem);
+  background-color: var(--color-bg-tertiary); /* Slight highlight for code */
+  border-radius: 0.2rem;
+}
+
+
+.violation-help-text-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs, 0.25rem);
+}
+.violation-help-text {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.export-button-container {
+  margin-top: var(--spacing-lg, 1.5rem);
+  padding-top: var(--spacing-md, 1rem);
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  justify-content: center;
+}
+
+.export-button {
+  /* Style like .analyze-button but perhaps with secondary colors */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-bg-tertiary); /* Secondary button style */
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm, 0.5rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+.export-button:hover {
+  background-color: var(--color-border-light);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

@@ -1,48 +1,37 @@
 // src/components/FileUploader.jsx
 import { useState, useRef } from 'react';
-import { useTheme } from '../context/ThemeContext';
-import { FaUpload, FaFile, FaCheck, FaTimes, FaSpinner, FaVolumeUp } from 'react-icons/fa';
-import TextToSpeech from './TextToSpeech';
+// Remove useTheme if not directly used for conditional styling in JS
+import { FaUpload, FaFile, FaSpinner, FaVolumeUp, FaExclamationTriangle, FaInfoCircle, FaCheckCircle, FaTimes } from 'react-icons/fa'; // Ensured all icons are imported
+import TextToSpeech from './TextToSpeech'; // Assuming this component is correctly set up
+import './styles/FileUploader.css'; // Import the new CSS
 
 function FileUploader() {
-  const { darkMode } = useTheme();
+  // const { darkMode } = useTheme(); // Only if needed for JS logic, not for root class
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState(null);
   const [error, setError] = useState('');
-  const [autoRead, setAutoRead] = useState(false);
+  const [autoRead, setAutoRead] = useState(false); // State for TextToSpeech toggle
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
 
-  // Gerenciar alteração de arquivo
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    
     if (!selectedFile) {
       setFile(null);
       return;
     }
-    
     if (selectedFile.type !== 'text/html' && !selectedFile.name.endsWith('.html')) {
       setError('Por favor, selecione um arquivo HTML válido.');
       setFile(null);
-      
-      if (autoRead) {
-        TextToSpeech.speak('Por favor, selecione um arquivo HTML válido.');
-      }
+      if (autoRead && window.speechSynthesis) TextToSpeech.speak('Por favor, selecione um arquivo HTML válido.');
       return;
     }
-    
     setFile(selectedFile);
     setError('');
-    
-    // Confirmar seleção para leitores de tela
-    if (autoRead) {
-      TextToSpeech.speak(`Arquivo selecionado: ${selectedFile.name}`);
-    }
+    if (autoRead && window.speechSynthesis) TextToSpeech.speak(`Arquivo selecionado: ${selectedFile.name}`);
   };
 
-  // Gerenciar drag and drop
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -59,330 +48,284 @@ function FileUploader() {
     e.preventDefault();
     e.stopPropagation();
     dropZoneRef.current.classList.remove('drag-over');
-    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
-      
       if (droppedFile.type !== 'text/html' && !droppedFile.name.endsWith('.html')) {
         setError('Por favor, arraste apenas arquivos HTML válidos.');
-        if (autoRead) {
-          TextToSpeech.speak('Por favor, arraste apenas arquivos HTML válidos.');
-        }
+        if (autoRead && window.speechSynthesis) TextToSpeech.speak('Por favor, arraste apenas arquivos HTML válidos.');
         return;
       }
-      
       setFile(droppedFile);
       setError('');
-      
-      // Confirmar seleção para leitores de tela
-      if (autoRead) {
-        TextToSpeech.speak(`Arquivo selecionado: ${droppedFile.name}`);
-      }
+      if (autoRead && window.speechSynthesis) TextToSpeech.speak(`Arquivo selecionado: ${droppedFile.name}`);
     }
   };
 
-  // Gerenciar análise
   const handleAnalyze = (e) => {
     e.preventDefault();
-    
     if (!file) {
       setError('Por favor, selecione um arquivo HTML para analisar.');
-      if (autoRead) {
-        TextToSpeech.speak('Por favor, selecione um arquivo HTML para analisar.');
-      }
+      if (autoRead && window.speechSynthesis) TextToSpeech.speak('Por favor, selecione um arquivo HTML para analisar.');
       return;
     }
-    
     setLoading(true);
     setError('');
+    if (autoRead && window.speechSynthesis) TextToSpeech.speak('Analisando arquivo HTML. Por favor, aguarde.');
     
-    // Anunciar para leitores de tela
-    if (autoRead) {
-      TextToSpeech.speak('Analisando arquivo HTML. Por favor, aguarde.');
-    }
-    
-    // Simulação de análise
     setTimeout(() => {
-      // Dados simulados para demonstração
+      const score = Math.floor(Math.random() * 40) + 60; // Score between 60-99
+      const numViolations = Math.floor(Math.random() * 5);
+      const impacts = ['critical', 'serious', 'moderate', 'minor'];
+      const simulatedViolations = Array.from({ length: numViolations }, (_, i) => ({
+        id: `simulated-rule-${i+1}`,
+        description: `Descrição simulada para o problema de acessibilidade número ${i+1}. Este é um texto placeholder.`,
+        impact: impacts[Math.floor(Math.random() * impacts.length)],
+        nodes: [{ html: `<div>Exemplo de código afetado ${i+1}</div>` }],
+        help: `Instrução simulada sobre como corrigir o problema ${i+1}.`
+      }));
+
       const simulatedReport = {
-        score: Math.floor(Math.random() * 30) + 70, // Score entre 70-100
-        violations: [
-          {
-            id: 'heading-order',
-            description: 'Cabeçalhos devem seguir uma ordem hierárquica',
-            impact: 'moderate',
-            nodes: [
-              { html: '<h3>Título</h3> <h1>Subtítulo</h1>' }
-            ]
-          },
-          {
-            id: 'label',
-            description: 'Formulários devem ter labels associados',
-            impact: 'serious',
-            nodes: [
-              { html: '<input type="text" placeholder="Nome">' }
-            ]
-          }
-        ]
+        score: score,
+        violations: simulatedViolations
       };
-      
       setReport(simulatedReport);
       setLoading(false);
-      
-      // Anunciar resultado para leitores de tela
       const resultMessage = `Análise concluída. Pontuação de acessibilidade: ${simulatedReport.score} de 100. ${simulatedReport.violations.length} problemas encontrados.`;
-      if (autoRead) {
-        TextToSpeech.speak(resultMessage);
-      }
+      if (autoRead && window.speechSynthesis) TextToSpeech.speak(resultMessage);
       
-      // Criar um elemento para leitores de tela
       const ariaLive = document.createElement('div');
       ariaLive.setAttribute('aria-live', 'polite');
       ariaLive.className = 'sr-only';
       ariaLive.textContent = resultMessage;
       document.body.appendChild(ariaLive);
-      
-      // Remover após anúncio
       setTimeout(() => {
-        document.body.removeChild(ariaLive);
+        if (document.body.contains(ariaLive)) document.body.removeChild(ariaLive);
       }, 1000);
     }, 1500);
   };
 
-  // Formatação do tamanho do arquivo
   const formatFileSize = (bytes) => {
-    if (bytes < 1024) return bytes + ' bytes';
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    else return (bytes / 1048576).toFixed(1) + ' MB';
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Obter cor com base na pontuação
-  const getScoreColor = (score) => {
-    if (score >= 90) return 'text-success';
-    else if (score >= 70) return 'text-warning';
-    else return 'text-error';
+  const getScoreColorClass = (score) => {
+    if (score >= 90) return 'var(--color-success)';
+    if (score >= 70) return 'var(--color-warning)';
+    return 'var(--color-error)';
   };
-
-  // Obter ícone com base no impacto
-  const getImpactIcon = (impact) => {
+  
+  const getImpactStyling = (impact) => {
     switch(impact) {
-      case 'critical': return <FaTimes className="text-error" aria-hidden="true" />;
-      case 'serious': return <FaExclamationTriangle className="text-warning" aria-hidden="true" />;
-      default: return <FaInfoCircle className="text-info" aria-hidden="true" />;
+      case 'critical': return { borderColor: 'var(--color-error)', badgeClass: 'critical' };
+      case 'serious': return { borderColor: 'var(--color-warning)', badgeClass: 'serious' };
+      case 'moderate': return { borderColor: 'var(--color-info, #3b82f6)', badgeClass: 'moderate' }; // Assuming info color
+      default: return { borderColor: 'var(--color-text-muted, #94a3b8)', badgeClass: 'minor' };
     }
   };
 
+
   return (
-    <div className="file-uploader">
-      <header className="mb-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Analisar Arquivo HTML</h2>
-          
+    <div className="file-uploader-container">
+      <header className="file-uploader-header">
+        <div className="file-uploader-header-content">
+          <div>
+            <h2 className="file-uploader-title">Analisar Arquivo HTML</h2>
+            <p className="file-uploader-description">
+              Faça upload de um arquivo HTML para verificar problemas de acessibilidade (análise simulada).
+            </p>
+          </div>
           <button
             onClick={() => setAutoRead(!autoRead)}
-            className={`flex items-center py-1 px-3 rounded-full text-sm transition-colors ${
-              autoRead 
-                ? 'bg-primary bg-opacity-20 text-primary' 
-                : 'bg-background-secondary text-text-secondary'
-            }`}
+            className={`auto-read-toggle ${autoRead ? 'active' : 'inactive'}`}
             aria-pressed={autoRead}
             aria-label={autoRead ? "Desativar leitura automática" : "Ativar leitura automática"}
           >
-            <FaVolumeUp className="mr-2" aria-hidden="true" />
-            <span>{autoRead ? "Leitura automática" : "Ativar leitura"}</span>
+            <FaVolumeUp aria-hidden="true" />
+            <span>{autoRead ? "Leitura Ligada" : "Leitura Desligada"}</span>
           </button>
         </div>
-        <p className="text-text-light">
-          Faça upload de um arquivo HTML para verificar problemas de acessibilidade
-        </p>
       </header>
       
-      <div className="mb-8">
+      <div className="upload-form-container">
         <form onSubmit={handleAnalyze} className="upload-form">
-          {/* Área de drag-and-drop acessível */}
-          <div className="mb-4">
-            <label htmlFor="html-file" className="form-label">
+          <div className="mb-4"> {/* Consistent margin */}
+            <label htmlFor="html-file-input" className="file-uploader-label">
               Arquivo HTML
             </label>
             <div 
               ref={dropZoneRef}
-              className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+              className="drop-zone"
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current.click()}
+              onClick={() => fileInputRef.current?.click()}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  fileInputRef.current.click();
+                  fileInputRef.current?.click();
                 }
               }}
               tabIndex={0}
               role="button"
               aria-label="Clique ou arraste um arquivo HTML para esta área"
+              aria-describedby="file-upload-instructions"
             >
-              <FaUpload className="mx-auto text-4xl mb-3 text-text-light" aria-hidden="true" />
-              <p className="mb-2 text-lg font-medium">
-                {file ? file.name : 'Clique ou arraste um arquivo HTML'}
+              <FaUpload className="drop-zone-icon" aria-hidden="true" />
+              <p className="drop-zone-text">
+                {file ? file.name : 'Clique ou arraste um arquivo HTML aqui'}
               </p>
-              <p className="text-sm text-text-light">
-                Apenas arquivos .html são suportados
+              <p id="file-upload-instructions" className="drop-zone-prompt">
+                Apenas arquivos .html são suportados.
               </p>
               <input
                 type="file"
-                id="html-file"
+                id="html-file-input"
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 accept=".html,text/html"
-                className="hidden"
-                aria-label="Selecionar arquivo HTML"
+                className="hidden" // Visually hidden, but accessible
+                aria-label="Selecionar arquivo HTML do seu computador"
               />
             </div>
           </div>
           
-          {/* Informações do arquivo */}
           {file && (
-            <div className="p-4 rounded-lg bg-background-alt mb-4">
-              <div className="flex items-center">
-                <FaFile className="text-primary mr-2" aria-hidden="true" />
-                <span className="font-medium">{file.name}</span>
-                <span className="ml-2 text-sm text-text-light">
-                  ({formatFileSize(file.size)})
-                </span>
-              </div>
+            <div className="file-info-bar">
+              <FaFile className="file-info-icon" aria-hidden="true" />
+              <span className="file-info-name">{file.name}</span>
+              <span className="file-info-size">({formatFileSize(file.size)})</span>
             </div>
           )}
           
-          {/* Mensagem de erro */}
           {error && (
-            <div className="alert alert-error mb-4" role="alert">
+            <div className="error-message-fileuploader" role="alert">
               {error}
             </div>
           )}
           
-          {/* Botão de análise */}
-          <div className="flex justify-end">
+          <div className="analyze-button-container">
             <button
               type="submit"
               disabled={loading || !file}
-              className={`form-button ${
-                loading || !file ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-              aria-label={loading ? "Analisando..." : "Analisar arquivo HTML"}
+              className="analyze-button"
+              aria-label={loading ? "Analisando arquivo..." : "Analisar arquivo HTML selecionado"}
             >
               {loading ? (
                 <>
-                  <FaSpinner className="animate-spin mr-2" aria-hidden="true" />
+                  <FaSpinner aria-hidden="true" /> 
                   <span>Analisando...</span>
                 </>
               ) : (
-                'Analisar'
+                'Analisar Arquivo'
               )}
             </button>
           </div>
         </form>
       </div>
       
-      {/* Indicador de carregamento */}
       {loading && (
         <div 
-          className="p-8 rounded-lg bg-background-alt text-center" 
+          className="loading-indicator-fileuploader"
           role="status"
           aria-live="polite"
         >
-          <FaSpinner className="animate-spin mx-auto text-4xl text-primary mb-4" aria-hidden="true" />
-          <p className="text-lg font-medium">Analisando arquivo HTML...</p>
-          <p className="text-sm text-text-light">Isso pode levar alguns segundos</p>
+          <FaSpinner aria-hidden="true" />
+          <p className="loading-text">Analisando seu arquivo HTML...</p>
+          <p className="loading-subtext">Isso pode levar alguns instantes.</p>
         </div>
       )}
       
-      {/* Relatório de análise */}
       {report && !loading && (
         <div 
-          className="rounded-lg border border-border overflow-hidden" 
-          aria-label="Relatório de análise de acessibilidade"
+          className="report-section-fileuploader"
+          aria-labelledby="report-title"
         >
-          <div className="p-4 bg-background-alt border-b border-border">
-            <h3 className="text-xl font-bold">Resultado da Análise</h3>
-          </div>
+          <header className="report-header">
+            <h3 id="report-title" className="report-header-title">Resultado da Análise Simulada</h3>
+          </header>
           
-          {/* Pontuação */}
-          <div className="p-6">
-            <div className="mb-6 text-center">
-              <div className="inline-block p-6 rounded-full bg-background-secondary">
-                <div className={`text-5xl font-bold ${getScoreColor(report.score)}`}>
+          <div className="report-body">
+            <div className="report-score-display">
+              <div className="report-score-wrapper" style={{ borderColor: getScoreColorClass(report.score) }}>
+                <div className="report-score-value" style={{ color: getScoreColorClass(report.score) }}>
                   {report.score}
                 </div>
-                <div className="text-sm mt-1">de 100</div>
+                <div className="report-score-label">de 100</div>
               </div>
-              <p className="mt-3 text-sm text-text-light">
-                Pontuação de Acessibilidade
+              <p className="report-score-description">
+                Pontuação de Acessibilidade Estimada
               </p>
             </div>
             
-            {/* Problemas encontrados */}
-            <div className="mt-6">
-              <h4 className="font-bold text-lg mb-4">
+            <div className="mt-6"> {/* Consistent margin */}
+              <h4 className="report-violations-header">
                 Problemas Encontrados ({report.violations.length})
               </h4>
               
-              <div className="space-y-4">
-                {report.violations.map((violation, index) => (
-                  <div 
-                    key={index} 
-                    className="p-4 bg-background rounded-lg border-l-4 border-l-error shadow-sm"
-                    tabIndex={0}
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <h5 className="font-bold">
-                        {violation.id}
-                      </h5>
-                      <span className={`tag ${
-                        violation.impact === 'critical' ? 'tag-error' : 
-                        violation.impact === 'serious' ? 'tag-warning' : 'tag-info'
-                      }`}>
-                        {violation.impact.toUpperCase()}
-                      </span>
-                    </div>
-                    
-                    <p className="mb-3 text-text-light">
-                      {violation.description}
-                    </p>
-                    
-                    <div className="bg-background-secondary p-3 rounded-lg mb-3">
-                      <h6 className="text-sm font-medium mb-1">Código afetado:</h6>
-                      <code className="text-xs block overflow-x-auto whitespace-pre-wrap p-2 bg-background">
-                        {violation.nodes[0].html}
-                      </code>
-                    </div>
-                    
-                    <div>
-                      <h6 className="text-sm font-medium mb-1">Como corrigir:</h6>
-                      <p className="text-sm text-text-light">
-                        {violation.id === 'heading-order' 
-                          ? 'Use cabeçalhos em ordem hierárquica (h1, seguido por h2, etc.).' 
-                          : violation.id === 'label' 
-                            ? 'Adicione elementos <label> associados a cada campo de formulário.' 
-                            : 'Consulte a documentação WCAG para mais detalhes.'}
+              {report.violations.length === 0 ? (
+                <p className="text-center text-text-secondary">Nenhum problema simulado encontrado!</p>
+              ) : (
+                <div className="report-violations-list">
+                  {report.violations.map((violation, index) => {
+                    const {borderColor: impactBorderColor, badgeClass: impactBadgeClass} = getImpactStyling(violation.impact);
+                    return (
+                    <div 
+                      key={index} 
+                      className="report-violation-item"
+                      style={{ borderLeftColor: impactBorderColor }}
+                      tabIndex={0}
+                      aria-labelledby={`violation-title-${index}`}
+                      aria-describedby={`violation-desc-${index} violation-help-${index}`}
+                    >
+                      <div className="violation-header">
+                        <h5 id={`violation-title-${index}`} className="violation-title">
+                          {violation.id}
+                        </h5>
+                        <span className={`violation-impact-badge ${impactBadgeClass}`}>
+                          {violation.impact}
+                        </span>
+                      </div>
+                      
+                      <p id={`violation-desc-${index}`} className="violation-description">
+                        {violation.description}
                       </p>
+                      
+                      {violation.nodes && violation.nodes[0] && (
+                        <div className="violation-code-snippet-container">
+                          <h6 className="violation-code-snippet-label">Exemplo de código afetado:</h6>
+                          <code className="violation-code-snippet">
+                            {violation.nodes[0].html}
+                          </code>
+                        </div>
+                      )}
+                      
+                      {violation.help && (
+                        <div id={`violation-help-${index}`} className="violation-help-text-container">
+                          <h6 className="violation-help-text-label">Como corrigir:</h6>
+                          <p className="violation-help-text">
+                            {violation.help}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  )})}
+                </div>
+              )}
             </div>
             
-            {/* Botão para exportar relatório */}
-            <div className="mt-6 pt-4 border-t border-border flex justify-center">
+            <div className="export-button-container">
               <button 
-                className="form-button bg-secondary hover:bg-secondary-hover"
+                className="export-button"
                 onClick={() => {
-                  const message = "A exportação de relatório em PDF será implementada em breve!";
+                  const message = "A exportação de relatório em PDF para arquivos HTML será implementada em breve!";
                   alert(message);
-                  if (autoRead) {
-                    TextToSpeech.speak(message);
-                  }
+                  if (autoRead && window.speechSynthesis) TextToSpeech.speak(message);
                 }}
-                aria-label="Exportar relatório em PDF"
+                aria-label="Exportar relatório em PDF (funcionalidade futura)"
               >
                 Exportar Relatório PDF
               </button>
@@ -393,8 +336,5 @@ function FileUploader() {
     </div>
   );
 }
-
-// Importando ícones faltantes
-import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 
 export default FileUploader;
