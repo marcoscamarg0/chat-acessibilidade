@@ -16,7 +16,7 @@ const faqResponses = {
   'como testar a acessibilidade':
     'Para testar a acessibilidade do seu site, você pode usar ferramentas de acessibilidade como:\n\n1. WAVE (Web Accessibility Evaluation Tool)\n2. AChecker\n3. WebAIM WAVE\n4. W3C Markup Validation Service\n5. Google Lighthouse\n6. Chrome Dev',
   'quero namorar o marcos':
-    'Desculpe, mas o Marcos é completamente dedicado a ISA. Ele não está disponível para relacionamentos.',
+    'Desculpe, mas o Marcos é completamente dedicado a ISA. Ele é comprometido.',
 };
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 let genAI;
