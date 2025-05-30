@@ -54,13 +54,12 @@ function App() {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      setSidebarOpen(!mobile);
+      setSidebarOpen(!mobile); // Em telas maiores, a sidebar começa aberta
     };
 
-    // Adicionar listener de resize
+    handleResize(); // Chamar na montagem inicial também
     window.addEventListener('resize', handleResize);
     
-    // Remover listener no cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -74,11 +73,14 @@ function App() {
         {/* Header Principal */}
         <header className="app-header">
           <div className="header-container">
-            {/* Logo e Título */}
-            <div className="brand">
-              <h1 className="brand-title">ISA</h1>
-              <span className="brand-subtitle">Inteligência Simulada de Acessibilidade</span>
-            </div>
+            
+            {/* Brand com link para recarregar a página */}
+            <a href="/app" className="brand-link" aria-label="Página inicial - Inteligência Simulada de Acessibilidade">
+              <div className="brand"> {/* Este div será o flex container para logo e subtítulo */}
+                <img src="logo.png" alt="ISA Logo" className="brand-logo" />
+                <span className="brand-subtitle">Inteligência Simulada de Acessibilidade</span>
+              </div>
+            </a>
 
             {/* Controles do Header */}
             <div className="header-controls">

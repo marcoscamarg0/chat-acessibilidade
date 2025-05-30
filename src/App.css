@@ -101,6 +101,20 @@ body {
   transition: top var(--transition-normal);
 }
 
+.brand {
+  display: flex;         /* Ativa o Flexbox */
+  align-items: center;   /* Alinha verticalmente a logo e o texto ao centro */
+  gap: 10px;             /* Adiciona um espaço entre a logo e o texto (ajuste conforme necessário) */
+}
+
+.brand-logo {
+  max-width: 70px; /* Ou o tamanho que você definiu antes */
+  height: auto;
+  /* Você pode adicionar uma margem à direita aqui também, se preferir em vez de 'gap' no .brand */
+  /* margin-right: 10px; */
+}
+
+
 .skip-link:focus {
   top: var(--spacing-md);
   outline: 2px solid white;
@@ -668,4 +682,101 @@ a:focus {
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) var(--color-bg-tertiary);
+}
+
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+}
+
+/* Estilo para o link da marca (novo) */
+.brand-link {
+  text-decoration: none; /* Remove o sublinhado padrão do link */
+  color: inherit; /* Faz o link herdar a cor do texto do pai */
+  display: inline-flex; /* Para que o <a> se ajuste ao conteúdo e alinhe corretamente */
+  align-items: center;
+}
+
+/* Ajuste no estilo .brand para garantir layout em linha e espaçamento */
+/* Localize a segunda definição de .brand no seu CSS (geralmente após /* Brand */ /*) e modifique-a */
+/* Se você tiver a definição .brand com flex-direction: column, mude para row */
+.brand {
+  display: flex;
+  flex-direction: row; /* Garante que logo e subtítulo fiquem lado a lado */
+  align-items: center;  /* Alinha verticalmente a logo e o texto ao centro */
+  gap: var(--spacing-sm); /* Espaço entre a logo e o subtítulo, use uma variável CSS se preferir (ex: 10px) */
+  /* Remove o gap original que era para flex-direction: column se não for mais necessário */
+}
+
+/* Estilo para a logo */
+.brand-logo {
+  max-width: 60px;   /* Ajuste o tamanho da logo conforme necessário */
+  max-height: 45px;  /* Adicionado para controlar a altura máxima, bom para consistência no header */
+  height: auto;      /* Mantém a proporção da imagem */
+  width: auto;       /* Garante que a largura seja automática se a altura for restringida */
+}
+
+/* O estilo .brand-title pode ser removido, já que não há mais h1.brand-title */
+/* Se você tinha .brand-title { ... }, pode deletar essas regras. */
+
+/* Estilo para o subtítulo (geralmente já existe e está bom) */
+.brand-subtitle {
+  font-size: 0.875rem; /* Mantém o tamanho original ou ajuste */
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  /* A regra de display: none em @media (max-width: 480px) é boa e será mantida */
+}
+
+/* Efeito hover opcional para o link da marca */
+.brand-link:hover .brand-subtitle {
+  text-decoration: underline; /* Exemplo: sublinhar o subtítulo ao passar o mouse */
+  color: var(--color-accent); /* Exemplo: mudar a cor do subtítulo */
+}
+.brand-link:hover .brand-logo {
+  opacity: 0.9; /* Exemplo: leve transparência na logo */
+}
+
+
+/* ... (Restante do seu App.css) ... */
+
+/* Importante: Verifique se você não tem definições conflitantes para .brand.
+   A definição acima para .brand (com flex-direction: row) deve ser a que se aplica
+   ao div que contém a imagem e o span.
+   Se você tem uma definição de .brand como esta no seu CSS:
+    .brand {
+      display: flex;
+      flex-direction: column; <--- esta linha precisa ser alterada para 'row' ou a regra toda ajustada/substituída
+      gap: var(--spacing-xs);
+    }
+   Você deve modificá-la para 'row' e ajustar o 'gap' conforme acima.
+   Ou, se a primeira definição de .brand no seu CSS já era:
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+   Você pode manter essa e remover a segunda que usa 'flex-direction: column'.
+   A forma mais limpa é ter uma única definição clara para .brand no contexto do header.
+*/
+
+/* A regra que esconde .brand-subtitle em telas pequenas deve ser mantida: */
+@media (max-width: 480px) {
+  /* ... outros estilos responsivos ... */
+  .brand-subtitle {
+    display: none; /* Isso já está no seu CSS e é uma boa prática */
+  }
+  .brand-logo {
+    max-width: 50px; /* Pode querer ajustar o tamanho da logo em telas menores também */
+    max-height: 40px;
+  }
+  .brand {
+    gap: var(--spacing-xs); /* Menor espaço em telas pequenas */
+  }
 }

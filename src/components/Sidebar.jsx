@@ -49,7 +49,10 @@ const Sidebar = ({ activeTool, setActiveTool }) => {
       {/* Header da Sidebar */}
       <div className="sidebar-header">
         <div className="sidebar-brand">
-          <FaRobot className="sidebar-brand-icon" />
+           <div className="brand">
+        <img src="logo.png" alt="Logo ISA" className="sidebar-brand-icon" href="/app" />
+      </div>
+      
           <div className="sidebar-brand-text">
             <h2>ISA</h2>
             <span>Ferramentas</span>
