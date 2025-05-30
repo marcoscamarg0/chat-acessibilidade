@@ -11,8 +11,13 @@ const faqResponses = {
     'Para melhorar a acessibilidade do seu site:\n\n1. Use textos alternativos para imagens\n2. Forneça legendas e transcrições para conteúdo de áudio e vídeo\n3. Crie um design responsivo\n4. Use cores com contraste adequado\n5. Torne seu site navegável por teclado\n6. Use rótulos claros em formulários\n7. Estruture seu conteúdo com cabeçalhos adequados\n8. Evite conteúdo que pisca ou causa convulsões\n9. Forneça maneiras de ajudar os usuários a navegar e encontrar conteúdo\n10. Teste seu site com ferramentas de acessibilidade e com usuários reais',
   'o que é tecnologia assistiva':
     'Tecnologias assistivas são dispositivos, softwares ou equipamentos que aumentam, mantêm ou melhoram as capacidades funcionais de pessoas com deficiências. Exemplos incluem leitores de tela, ampliadores de tela, softwares de reconhecimento de voz, teclados alternativos e dispositivos de apontamento alternativos.',
+  'quais são as ferramentas de acessibilidade':
+    'Existem várias ferramentas de acessibilidade disponíveis, como:\n\n1. Leitores de tela (como o NVDA para Windows, o VoiceOver para macOS e o TalkBack para Android)\n2. Ampliadores de tela\n3. Softwares de reconhecimento de voz\n4. Teclados alternativos\n5. Dispositivos de apontamento alternativos\n6. Ferramentas de teste de acessibilidade (como o WAVE, o AChecker e o WebAIM WAVE)\n7. Ferramentas de validação de acessibilidade (como o W3C Markup Validation Service e o WAVE Web Accessibility Evaluation Tool)',
+  'como testar a acessibilidade':
+    'Para testar a acessibilidade do seu site, você pode usar ferramentas de acessibilidade como:\n\n1. WAVE (Web Accessibility Evaluation Tool)\n2. AChecker\n3. WebAIM WAVE\n4. W3C Markup Validation Service\n5. Google Lighthouse\n6. Chrome Dev',
+  'quero namorar o marcos':
+    'Desculpe, mas o Marcos é completamente dedicado a ISA. Ele não está disponível para relacionamentos.',
 };
-
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 let genAI;
 let model;
