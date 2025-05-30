@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { FaComments, FaLink, FaFileCode, FaBook, FaMoon, FaSun, FaArrowLeft } from 'react-icons/fa';
+import './styles/Sidebar.css';
 
 function Sidebar({ activeTool, setActiveTool }) {
   const { darkMode, toggleTheme } = useTheme();
@@ -44,52 +45,44 @@ function Sidebar({ activeTool, setActiveTool }) {
 
   return (
     <nav 
-      className={`h-full flex flex-col transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-64'} glass`} 
+      className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''} ${darkMode ? 'sidebar--dark' : 'sidebar--light'}`}
       aria-label="Menu principal"
     >
-      <div className={`p-4 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
+      <div className="sidebar__header">
         {!collapsed && (
-          <div className="flex items-center">
-            <div className="text-primary text-2xl mr-2" aria-hidden="true">♿</div>
-            <span className="gradient-text font-bold text-lg">AssistAcess</span>
+          <div className="sidebar__brand">
+            <div className="sidebar__brand-icon" aria-hidden="true">♿</div>
+            <span className="sidebar__brand-text">AssistAcess</span>
           </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-2 rounded-full hover:bg-background-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+          className="sidebar__toggle"
           aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
         >
-          <FaArrowLeft className={`text-primary transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`} />
+          <FaArrowLeft className={`sidebar__toggle-icon ${collapsed ? 'sidebar__toggle-icon--rotated' : ''}`} />
         </button>
       </div>
       
-      <div className="px-2 py-4 flex-1 overflow-auto">
+      <div className="sidebar__content">
         <div role="menu" aria-label="Ferramentas disponíveis">
           {menuItems.map(item => (
             <div 
               key={item.id}
               role="menuitem"
               tabIndex={0}
-              className={`my-2 rounded-lg flex items-center cursor-pointer transition-all ${
-                collapsed ? 'justify-center p-3' : 'p-3'
-              } ${
-                activeTool === item.id 
-                  ? 'bg-primary text-white' 
-                  : 'hover:bg-background-secondary text-text'
-              } focus:outline-none focus:ring-2 focus:ring-primary`}
+              className={`sidebar__item ${activeTool === item.id ? 'sidebar__item--active' : ''}`}
               onClick={() => setActiveTool(item.id)}
               onKeyDown={(e) => handleKeyDown(e, item.id)}
               aria-label={item.ariaLabel}
               aria-current={activeTool === item.id ? 'page' : undefined}
             >
-              <div className={`${activeTool === item.id ? 'text-white' : 'text-primary'}`}>
+              <div className="sidebar__item-icon">
                 {item.icon}
               </div>
               
               {!collapsed && (
-                <span className={`ml-3 transition-opacity duration-200 ${
-                  collapsed ? 'opacity-0 w-0' : 'opacity-100'
-                }`}>
+                <span className="sidebar__item-label">
                   {item.label}
                 </span>
               )}
@@ -98,21 +91,21 @@ function Sidebar({ activeTool, setActiveTool }) {
         </div>
       </div>
       
-      <div className={`p-3 border-t border-border ${collapsed ? 'flex justify-center' : ''}`}>
+      <div className="sidebar__footer">
         <button 
           onClick={toggleTheme} 
-          className="p-2 rounded-full hover:bg-background-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-primary flex items-center"
+          className="sidebar__theme-toggle"
           aria-label={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
         >
           {darkMode ? (
             <>
-              <FaSun className="text-secondary" />
-              {!collapsed && <span className="ml-2">Modo Claro</span>}
+              <FaSun className="sidebar__theme-icon" />
+              {!collapsed && <span className="sidebar__theme-label">Modo Claro</span>}
             </>
           ) : (
             <>
-              <FaMoon className="text-primary" />
-              {!collapsed && <span className="ml-2">Modo Escuro</span>}
+              <FaMoon className="sidebar__theme-icon" />
+              {!collapsed && <span className="sidebar__theme-label">Modo Escuro</span>}
             </>
           )}
         </button>

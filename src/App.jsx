@@ -73,9 +73,7 @@ function App() {
   return (
     <div className="app-container">
       {/* Link de acessibilidade para pular navegação */}
-      <a href="#main-content" className="skip-link">
-        Pular para o conteúdo principal
-      </a>
+      
 
       {/* Botão de menu para dispositivos móveis */}
       {isMobile && (
