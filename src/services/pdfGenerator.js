@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 
 export const generateChatPDF = (messages, options = {}) => {
   const {
-    title = 'Relatório de Chat - AssistAcess',
+    title = 'Relatório de Chat - ISA ',
     includeTimestamps = true,
     fontSize = 12,
     margin = 20
@@ -38,7 +38,7 @@ export const generateChatPDF = (messages, options = {}) => {
     }
 
     // Cabeçalho da mensagem
-    const sender = message.sender === 'bot' ? 'AssistAcess' : 'Usuário';
+    const sender = message.sender === 'bot' ? 'ISA' : 'Usuário';
     const timestamp = includeTimestamps ? 
       ` - ${message.timestamp.toLocaleString('pt-BR')}` : '';
     
@@ -72,7 +72,7 @@ export const downloadChatPDF = (messages, filename = 'chat-assistaccess.pdf') =>
 
 export const generateAccessibilityReportPDF = (analysisData, options = {}) => {
   const {
-    title = 'Relatório de Acessibilidade - AssistAcess',
+    title = 'Relatório de Acessibilidade - ISA',
     includeDetails = true
   } = options;
 

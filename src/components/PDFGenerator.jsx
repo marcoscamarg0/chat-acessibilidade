@@ -65,9 +65,9 @@ function PDFGenerator({ report, url, htmlContent }) {
       pdf.setProperties({
         title: `Relatório de Acessibilidade - ${url || 'Análise Local'}`,
         subject: 'Análise de Acessibilidade Web',
-        author: 'AssistAcess',
+        author: 'ISA - Inteligência Simulada de Acessibilidade',
         keywords: 'acessibilidade, WCAG, análise',
-        creator: 'AssistAcess'
+        creator: 'ISA - Inteligência Simulada de Acessibilidade'
       });
 
       // Salva o PDF
@@ -196,8 +196,8 @@ function PDFGenerator({ report, url, htmlContent }) {
           </div>
           
           <div className="text-center text-xs text-gray-600 mt-8 pt-4 border-t">
-            <p>Gerado por AssistAcess - Assistente de Acessibilidade</p>
-            <p>© 2023 AssistAcess</p>
+            <p>Gerado por ISA - Inteligência Simulada de Acessibilidade</p>
+            <p>© 2025 ISA</p>
           </div>
         </div>
       </div>

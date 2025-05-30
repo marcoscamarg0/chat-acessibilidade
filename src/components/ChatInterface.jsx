@@ -36,7 +36,7 @@ function ChatInterface() {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      content: 'Olá! Sou o AssistAcess, seu assistente de acessibilidade. Posso analisar sites (usando PageSpeed Insights), responder dúvidas sobre WCAG com a ajuda da IA Gemini e mais. Como posso ajudar você hoje?',
+      content: 'Olá! Sou a ISA, seu assistente de acessibilidade. Posso analisar sites, responder dúvidas sobre WCAG com a ajuda da IA. Como posso ajudar você hoje?',
       timestamp: new Date(),
       type: 'welcome'
     }
@@ -490,7 +490,7 @@ function ChatInterface() {
       <div className="chat-header">
         <h2 className="chat-title">
           <FaRobot style={{ marginRight: '0.5rem' }} size={isMobile ? 18 : 20} /> 
-          <span>AssistAcess Chat</span>
+          <span>ISA Chat</span>
           {isAnalyzing && (
             <FaSpinner 
               style={{ marginLeft: '0.5rem', animation: 'spin 1s linear infinite' }} 
@@ -807,7 +807,7 @@ function ChatInterface() {
                 <div className="typing-dot"></div>
                 <div className="typing-dot"></div>
               </div>
-              <div className="sr-only" aria-live="assertive">AssistAcess está digitando...</div>
+              <div className="sr-only" aria-live="assertive">ISA está digitando...</div>
             </div>
           </div>
         )}

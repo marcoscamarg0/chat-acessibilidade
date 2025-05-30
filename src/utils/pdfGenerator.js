@@ -60,7 +60,7 @@ export const generatePDFReport = async (result, url) => {
   
   pdf.setFontSize(14);
   pdf.setFont(undefined, 'normal');
-  pdf.text('AssistAcess - Análise Detalhada', margin, 35);
+  pdf.text('ISA - Análise Detalhada', margin, 35);
   pdf.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, 45);
 
   yPosition = 70;
@@ -378,12 +378,12 @@ export const generatePDFReport = async (result, url) => {
     pdf.setFontSize(8);
     pdf.setTextColor(100, 100, 100);
     pdf.text(`Página ${i} de ${totalPages}`, pageWidth - margin - 30, pageHeight - 15);
-    pdf.text('Relatório gerado por AssistAcess - Analisador de Acessibilidade Web', margin, pageHeight - 15);
+    pdf.text('Relatório gerado por ISA - Inteligência Simulada de Acessibilidade', margin, pageHeight - 15);
     pdf.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, pageHeight - 8);
     
     // Logo ou marca d'água (opcional)
     pdf.setFontSize(6);
-    pdf.text('♿ AssistAcess', pageWidth - margin - 25, pageHeight - 8);
+    pdf.text('♿ ISA', pageWidth - margin - 25, pageHeight - 8);
   }
 
   // Download do PDF

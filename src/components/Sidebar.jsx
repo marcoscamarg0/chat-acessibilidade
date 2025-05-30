@@ -51,7 +51,7 @@ const Sidebar = ({ activeTool, setActiveTool }) => {
         <div className="sidebar-brand">
           <FaRobot className="sidebar-brand-icon" />
           <div className="sidebar-brand-text">
-            <h2>AssistAcess</h2>
+            <h2>ISA</h2>
             <span>Ferramentas</span>
           </div>
         </div>
@@ -96,7 +96,7 @@ const Sidebar = ({ activeTool, setActiveTool }) => {
       <div className="sidebar-footer">
         <div className="sidebar-info">
           <p className="sidebar-version">v1.0.0</p>
-          <p className="sidebar-copyright">© 2024 AssistAcess</p>
+          <p className="sidebar-copyright">© 2025 ISA - Inteligência Simulada de Acessibilidade</p>
         </div>
       </div>
     </nav>

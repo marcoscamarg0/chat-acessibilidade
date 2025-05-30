@@ -70,18 +70,14 @@ function App() {
   return (
     <ThemeProvider>
       <div className="app">
-        {/* Skip Link para Acessibilidade */}
-        <a href="#main-content" className="skip-link">
-          Pular para o conteúdo principal
-        </a>
 
         {/* Header Principal */}
         <header className="app-header">
           <div className="header-container">
             {/* Logo e Título */}
             <div className="brand">
-              <h1 className="brand-title">AssistAcess</h1>
-              <span className="brand-subtitle">Assistente de Acessibilidade Digital</span>
+              <h1 className="brand-title">ISA</h1>
+              <span className="brand-subtitle">Inteligência Simulada de Acessibilidade</span>
             </div>
 
             {/* Controles do Header */}

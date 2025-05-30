@@ -18,7 +18,7 @@ function MessageBubble({ message }) {
         >
           {isBot && (
             <div className="text-xs text-primary font-bold mb-1">
-              AssistAcess
+              ISA
             </div>
           )}
           <div>{content}</div>
