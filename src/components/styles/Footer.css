@@ -1,0 +1,534 @@
+.app-footer {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-top: 1px solid #e2e8f0;
+  padding: 2rem 1rem 1rem;
+  margin-top: auto;
+  transition: all 0.3s ease;
+}
+
+.app-footer.dark {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-top: 1px solid #374151;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+  }
+}
+
+/* Seção de desenvolvimento */
+.footer-section.development {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.love-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.app-footer.dark .love-message {
+  color: #e5e7eb;
+}
+
+.heart-icon {
+  color: #ef4444;
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.developers {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .developers {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+  }
+}
+
+.developer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.app-footer.dark .developer {
+  background: rgba(31, 41, 55, 0.7);
+  border-color: #4b5563;
+}
+
+.developer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.app-footer.dark .developer:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.developer-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.developer-icon {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.app-footer.dark .developer-icon {
+  color: #60a5fa;
+}
+
+.developer-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.developer-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.app-footer.dark .developer-name {
+  color: #f9fafb;
+}
+
+.developer-role {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.app-footer.dark .developer-role {
+  color: #9ca3af;
+}
+
+.social-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.social-link.linkedin {
+  background: #0077b5;
+  color: white;
+}
+
+.social-link.linkedin:hover {
+  background: #005885;
+  transform: scale(1.1);
+}
+
+.social-link.github {
+  background: #333;
+  color: white;
+}
+
+.social-link.github:hover {
+  background: #24292e;
+  transform: scale(1.1);
+}
+
+.orientation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.orientation-text {
+  font-style: italic;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.app-footer.dark .orientation-text {
+  color: #9ca3af;
+}
+
+/* Seção de instituições */
+.footer-section.institutions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.institution {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.app-footer.dark .institution {
+  background: rgba(31, 41, 55, 0.5);
+  border-color: #4b5563;
+}
+
+.institution:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateX(4px);
+}
+
+.app-footer.dark .institution:hover {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.institution-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.institution-icon {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.app-footer.dark .institution-icon {
+  color: #10b981;
+}
+
+.institution-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.institution-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.app-footer.dark .institution-name {
+  color: #f9fafb;
+}
+
+.institution-role {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.app-footer.dark .institution-role {
+  color: #9ca3af;
+}
+
+.institution-link {
+  color: #6b7280;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.institution-link:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.app-footer.dark .institution-link {
+  color: #9ca3af;
+}
+
+.app-footer.dark .institution-link:hover {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+}
+
+/* Seção de informações do projeto */
+.footer-section.project-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.project-description h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.app-footer.dark .project-description h4 {
+  color: #f9fafb;
+}
+
+.project-description p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.app-footer.dark .project-description p {
+  color: #9ca3af;
+}
+
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.project-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.project-link:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.app-footer.dark .project-link {
+  background: rgba(96, 165, 250, 0.1);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+.app-footer.dark .project-link:hover {
+  background: rgba(96, 165, 250, 0.2);
+  box-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
+}
+
+/* Footer bottom */
+.footer-bottom {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+.app-footer.dark .footer-bottom {
+  border-top-color: #374151;
+}
+
+@media (min-width: 768px) {
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+.copyright {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.app-footer.dark .copyright {
+  color: #9ca3af;
+}
+
+.tech-info {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.app-footer.dark .tech-info {
+  color: #6b7280;
+}
+
+/* Responsividade para mobile */
+@media (max-width: 640px) {
+  .app-footer {
+    padding: 1.5rem 0.75rem 1rem;
+  }
+  
+  .footer-content {
+    gap: 1.5rem;
+  }
+  
+  .developers {
+    gap: 1rem;
+  }
+  
+  .developer {
+    padding: 0.75rem;
+  }
+  
+  .developer-name {
+    font-size: 0.9rem;
+  }
+  
+  .developer-role {
+    font-size: 0.8rem;
+  }
+  
+  .institution {
+    padding: 0.75rem;
+  }
+  
+  .institution-name {
+    font-size: 0.85rem;
+  }
+  
+  .institution-role {
+    font-size: 0.75rem;
+  }
+  
+  .love-message {
+    font-size: 1rem;
+  }
+  
+  .orientation-text {
+    font-size: 0.85rem;
+  }
+}
+
+/* Animações de entrada */
+.footer-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.footer-section:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.footer-section:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Acessibilidade */
+.social-link:focus,
+.institution-link:focus,
+.project-link:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.app-footer.dark .social-link:focus,
+.app-footer.dark .institution-link:focus,
+.app-footer.dark .project-link:focus {
+  outline-color: #60a5fa;
+}
+
+/* Estados de hover melhorados */
+.developer.advisor {
+  border-left: 3px solid #10b981;
+}
+
+.app-footer.dark .developer.advisor {
+  border-left-color: #34d399;
+}
+
+.developer.advisor .developer-icon {
+  color: #10b981;
+}
+
+.app-footer.dark .developer.advisor .developer-icon {
+  color: #34d399;
+}
+
+/* Indicador visual para orientadora */
+.developer.advisor::before {
+  content: "👩‍🏫";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 1.2rem;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+  border: 2px solid #10b981;
+}
+
+.app-footer.dark .developer.advisor::before {
+  background: #1f2937;
+  border-color: #34d399;
+}
+
+.developer {
+  position: relative;
+}
+
+/* Badges para instituições */
+.institution:first-child .institution-icon {
+  color: #dc2626;
+}
+
+.app-footer.dark .institution:first-child .institution-icon {
+  color: #f87171;
+}
+
+.institution:last-child .institution-icon {
+  color: #7c3aed;
+}
+
+.app-footer.dark .institution:last-child .institution-icon {
+  color: #a78bfa;
+}

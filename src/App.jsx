@@ -7,6 +7,10 @@ import {
   FileUploader, 
   WcagGuide 
 } from './components';
+import Footer from './components/Footer';
+import ThemeToggle from './components/ThemeToggle';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import './App.css';
 
 // Componente para renderizar o conteúdo dinâmico
 const ContentRenderer = ({ activeTool }) => {
@@ -17,21 +21,21 @@ const ContentRenderer = ({ activeTool }) => {
     guide: <WcagGuide />
   };
 
+  const titleMap = {
+    chat: 'Chat Assistente',
+    url: 'Análise de URL',
+    upload: 'Upload de Arquivo',
+    guide: 'Guia WCAG'
+  };
+
   return (
-    <div className="content-wrapper">
+    <div className="content-area">
       <div className="content-header">
-        <h1 className="gradient-text">
-          {
-            {
-              chat: 'Assistente de Acessibilidade',
-              url: 'Analisar URL',
-              upload: 'Upload de HTML',
-              guide: 'Guia WCAG'
-            }[activeTool]
-          }
-        </h1>
+        <h1 className="content-title">{titleMap[activeTool]}</h1>
       </div>
-      {contentMap[activeTool] || contentMap.chat}
+      <div className="content-body">
+        {contentMap[activeTool] || contentMap.chat}
+      </div>
     </div>
   );
 };
@@ -50,12 +54,7 @@ function App() {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      
-      if (mobile) {
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
-      }
+      setSidebarOpen(!mobile);
     };
 
     // Adicionar listener de resize
@@ -66,50 +65,77 @@ function App() {
   }, []);
 
   // Função para alternar a sidebar em dispositivos móveis
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <div className="app-container">
-      {/* Link de acessibilidade para pular navegação */}
-      
+    <ThemeProvider>
+      <div className="app">
+        {/* Skip Link para Acessibilidade */}
+        <a href="#main-content" className="skip-link">
+          Pular para o conteúdo principal
+        </a>
 
-      {/* Botão de menu para dispositivos móveis */}
-      {isMobile && (
-        <button 
-          className="mobile-menu-toggle"
-          onClick={toggleSidebar}
-          aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={sidebarOpen}
-        >
-          {sidebarOpen ? '✖' : '☰'}
-        </button>
-      )}
+        {/* Header Principal */}
+        <header className="app-header">
+          <div className="header-container">
+            {/* Logo e Título */}
+            <div className="brand">
+              <h1 className="brand-title">AssistAcess</h1>
+              <span className="brand-subtitle">Assistente de Acessibilidade Digital</span>
+            </div>
 
-      {/* Sidebar */}
-      {sidebarOpen && (
-        <Sidebar 
-          activeTool={activeTool} 
-          setActiveTool={(tool) => {
-            setActiveTool(tool);
-            
-            // Fechar sidebar em mobile após selecionar
-            if (isMobile) {
-              setSidebarOpen(false);
-            }
-          }}
-        />
-      )}
+            {/* Controles do Header */}
+            <div className="header-controls">
+              <ThemeToggle />
+              {isMobile && (
+                <button
+                  className="menu-toggle"
+                  onClick={toggleSidebar}
+                  aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
+                  aria-expanded={sidebarOpen}
+                >
+                  {sidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+                </button>
+              )}
+            </div>
+          </div>
+        </header>
 
-      {/* Conteúdo principal */}
-      <main 
-        id="main-content" 
-        className={`main-content ${sidebarOpen && !isMobile ? 'with-sidebar' : ''}`}
-      >
-        <ContentRenderer activeTool={activeTool} />
-      </main>
-    </div>
+        {/* Layout Principal */}
+        <div className="app-layout">
+          {/* Sidebar de Navegação */}
+          <aside className={`sidebar-container ${sidebarOpen ? 'open' : 'closed'}`}>
+            <Sidebar 
+              activeTool={activeTool} 
+              setActiveTool={(tool) => {
+                setActiveTool(tool);
+                if (isMobile) setSidebarOpen(false);
+              }}
+            />
+          </aside>
+
+          {/* Overlay para Mobile */}
+          {isMobile && sidebarOpen && (
+            <div 
+              className="sidebar-overlay"
+              onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
+            />
+          )}
+
+          {/* Área de Conteúdo Principal */}
+          <main 
+            id="main-content" 
+            className={`main-container ${sidebarOpen && !isMobile ? 'with-sidebar' : ''}`}
+          >
+            <ContentRenderer activeTool={activeTool} />
+          </main>
+        </div>
+
+        {/* Rodapé */}
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 }
 

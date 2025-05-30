@@ -1,117 +1,106 @@
-// src/components/Sidebar.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { FaComments, FaLink, FaFileCode, FaBook, FaMoon, FaSun, FaArrowLeft } from 'react-icons/fa';
+import { 
+  FaComments, 
+  FaGlobe, 
+  FaUpload, 
+  FaBook,
+  FaRobot,
+  FaChevronRight
+} from 'react-icons/fa';
 import './styles/Sidebar.css';
 
-function Sidebar({ activeTool, setActiveTool }) {
-  const { darkMode, toggleTheme } = useTheme();
-  const [collapsed, setCollapsed] = useState(false);
+const Sidebar = ({ activeTool, setActiveTool }) => {
+  const { darkMode } = useTheme();
 
   const menuItems = [
-    { 
-      id: 'chat', 
-      label: 'Chat', 
-      icon: <FaComments size={18} />, 
-      ariaLabel: 'Chat com assistente' 
+    {
+      id: 'chat',
+      label: 'Chat Assistente',
+      description: 'Converse com o assistente de acessibilidade',
+      icon: FaComments,
+      color: '#3b82f6'
     },
-    { 
-      id: 'url', 
-      label: 'Analisar URL', 
-      icon: <FaLink size={18} />, 
-      ariaLabel: 'Analisar acessibilidade de URL' 
+    {
+      id: 'url',
+      label: 'Analisar URL',
+      description: 'Analise a acessibilidade de um site',
+      icon: FaGlobe,
+      color: '#10b981'
     },
-    { 
-      id: 'upload', 
-      label: 'Upload de HTML', 
-      icon: <FaFileCode size={18} />, 
-      ariaLabel: 'Analisar arquivo HTML' 
+    {
+      id: 'upload',
+      label: 'Upload HTML',
+      description: 'Envie arquivos para análise',
+      icon: FaUpload,
+      color: '#f59e0b'
     },
-    { 
-      id: 'guide', 
-      label: 'Guia WCAG', 
-      icon: <FaBook size={18} />, 
-      ariaLabel: 'Consultar guia WCAG' 
-    },
+    {
+      id: 'guide',
+      label: 'Guia WCAG',
+      description: 'Consulte as diretrizes de acessibilidade',
+      icon: FaBook,
+      color: '#8b5cf6'
+    }
   ];
 
-  // Handle keyboard navigation
-  const handleKeyDown = (e, itemId) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      setActiveTool(itemId);
-    }
-  };
-
   return (
-    <nav 
-      className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''} ${darkMode ? 'sidebar--dark' : 'sidebar--light'}`}
-      aria-label="Menu principal"
-    >
-      <div className="sidebar__header">
-        {!collapsed && (
-          <div className="sidebar__brand">
-            <div className="sidebar__brand-icon" aria-hidden="true">♿</div>
-            <span className="sidebar__brand-text">AssistAcess</span>
+    <nav className={`sidebar ${darkMode ? 'dark' : ''}`} role="navigation" aria-label="Menu principal">
+      {/* Header da Sidebar */}
+      <div className="sidebar-header">
+        <div className="sidebar-brand">
+          <FaRobot className="sidebar-brand-icon" />
+          <div className="sidebar-brand-text">
+            <h2>AssistAcess</h2>
+            <span>Ferramentas</span>
           </div>
-        )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="sidebar__toggle"
-          aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
-        >
-          <FaArrowLeft className={`sidebar__toggle-icon ${collapsed ? 'sidebar__toggle-icon--rotated' : ''}`} />
-        </button>
-      </div>
-      
-      <div className="sidebar__content">
-        <div role="menu" aria-label="Ferramentas disponíveis">
-          {menuItems.map(item => (
-            <div 
-              key={item.id}
-              role="menuitem"
-              tabIndex={0}
-              className={`sidebar__item ${activeTool === item.id ? 'sidebar__item--active' : ''}`}
-              onClick={() => setActiveTool(item.id)}
-              onKeyDown={(e) => handleKeyDown(e, item.id)}
-              aria-label={item.ariaLabel}
-              aria-current={activeTool === item.id ? 'page' : undefined}
-            >
-              <div className="sidebar__item-icon">
-                {item.icon}
-              </div>
-              
-              {!collapsed && (
-                <span className="sidebar__item-label">
-                  {item.label}
-                </span>
-              )}
-            </div>
-          ))}
         </div>
       </div>
-      
-      <div className="sidebar__footer">
-        <button 
-          onClick={toggleTheme} 
-          className="sidebar__theme-toggle"
-          aria-label={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
-        >
-          {darkMode ? (
-            <>
-              <FaSun className="sidebar__theme-icon" />
-              {!collapsed && <span className="sidebar__theme-label">Modo Claro</span>}
-            </>
-          ) : (
-            <>
-              <FaMoon className="sidebar__theme-icon" />
-              {!collapsed && <span className="sidebar__theme-label">Modo Escuro</span>}
-            </>
-          )}
-        </button>
+
+      {/* Menu Items */}
+      <div className="sidebar-menu">
+        <div className="menu-section">
+          <h3 className="menu-section-title">Ferramentas</h3>
+          <ul className="menu-list" role="list">
+            {menuItems.map((item) => {
+              const IconComponent = item.icon;
+              const isActive = activeTool === item.id;
+              
+              return (
+                <li key={item.id} role="listitem">
+                  <button
+                    onClick={() => setActiveTool(item.id)}
+                    className={`menu-item ${isActive ? 'active' : ''}`}
+                    aria-current={isActive ? 'page' : undefined}
+                    title={item.description}
+                  >
+                    <div className="menu-item-icon" style={{ color: item.color }}>
+                      <IconComponent size={20} />
+                    </div>
+                    <div className="menu-item-content">
+                      <span className="menu-item-label">{item.label}</span>
+                      <span className="menu-item-description">{item.description}</span>
+                    </div>
+                    <div className="menu-item-arrow">
+                      <FaChevronRight size={12} />
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+
+      {/* Footer da Sidebar */}
+      <div className="sidebar-footer">
+        <div className="sidebar-info">
+          <p className="sidebar-version">v1.0.0</p>
+          <p className="sidebar-copyright">© 2024 AssistAcess</p>
+        </div>
       </div>
     </nav>
   );
-}
+};
 
 export default Sidebar;
