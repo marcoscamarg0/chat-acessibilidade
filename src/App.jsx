@@ -75,7 +75,7 @@ function App() {
           <div className="header-container">
             
             {/* Brand com link para recarregar a página */}
-            <a href="/app" className="brand-link" aria-label="Página inicial - Inteligência Simulada de Acessibilidade">
+            <a href="/" className="brand-link" aria-label="Página inicial - Inteligência Simulada de Acessibilidade">
               <div className="brand"> {/* Este div será o flex container para logo e subtítulo */}
                 <img src="logo.png" alt="ISA Logo" className="brand-logo" />
                 <span className="brand-subtitle">Inteligência Simulada de Acessibilidade</span>
