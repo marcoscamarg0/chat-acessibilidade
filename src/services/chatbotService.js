@@ -33,6 +33,18 @@ if (GEMINI_API_KEY) {
   console.warn("Chave da API do Gemini não encontrada. O Chatbot usará respostas padrão e locais.");
 }
 
+// Função para identificar se a mensagem é uma solicitação de modificação de código
+const isCodeModificationRequest = (message) => {
+  const lowerMessage = message.toLowerCase();
+  const keywords = ['modifique', 'altere', 'corrija', 'melhore este código', 'refatore para acessibilidade'];
+  const codeIndicators = ['<', '/>', 'function', 'var', 'let', 'const', '=>', '{', '}'];
+
+  const hasKeyword = keywords.some(kw => lowerMessage.includes(kw));
+  const hasCodeIndicator = codeIndicators.some(ind => message.includes(ind)); // Verifica na mensagem original para manter < >
+
+  return hasKeyword && hasCodeIndicator;
+};
+
 export const getBotResponse = async (message, activeTool) => {
   const normalizedMessage = message.toLowerCase().trim();
 
@@ -52,27 +64,59 @@ export const getBotResponse = async (message, activeTool) => {
     }
   }
 
-  // 3. Se a API Gemini estiver configurada e a pergunta for sobre acessibilidade ou no contexto do chat
-  //    Adicionamos uma heurística simples para tentar identificar perguntas sobre acessibilidade.
-  const isAccessibilityQuestion = normalizedMessage.includes('acessibilidade') ||
-                                  normalizedMessage.includes('wcag') ||
-                                  normalizedMessage.includes('leitor de tela') ||
-                                  normalizedMessage.includes('contraste') ||
-                                  normalizedMessage.includes('teclado') ||
-                                  normalizedMessage.includes('aria');
-
-  if (model && (isAccessibilityQuestion || activeTool === 'chat')) {
+  // 3. Se a API Gemini estiver configurada
+  if (model) {
     try {
-      const prompt = `Você é um assistente especializado em acessibilidade web (WCAG). Responda à seguinte pergunta do usuário de forma concisa e útil. Se a pergunta não parecer ser sobre acessibilidade web, WCAG, ou tópicos diretamente relacionados, informe educadamente que você pode ajudar principalmente com questões de acessibilidade.\n\nPergunta do usuário: "${message}"\n\nSua resposta:`;
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      return text || "Não consegui processar sua pergunta com a IA Gemini. Tente reformular.";
+      let prompt;
+      // Verifica se a mensagem é uma solicitação de modificação de código
+      if (isCodeModificationRequest(message)) {
+        prompt = `
+Você é um assistente especializado em acessibilidade web (WCAG). O usuário forneceu um trecho de código e está pedindo para modificá-lo para melhorar a acessibilidade.
+Analise o código fornecido e retorne uma versão corrigida com as melhorias de acessibilidade aplicadas.
+Explique brevemente as principais mudanças realizadas e por que elas melhoram a acessibilidade.
+Formate o código corrigido usando blocos de markdown (por exemplo, \`\`\`html ... \`\`\`).
+
+Aqui está a solicitação e o código do usuário:
+"${message}"
+
+Sua resposta:`;
+      } else {
+        // Heurística para identificar perguntas gerais sobre acessibilidade
+        const isAccessibilityQuestion = normalizedMessage.includes('acessibilidade') ||
+                                        normalizedMessage.includes('wcag') ||
+                                        normalizedMessage.includes('leitor de tela') ||
+                                        normalizedMessage.includes('contraste') ||
+                                        normalizedMessage.includes('teclado') ||
+                                        normalizedMessage.includes('aria');
+
+        if (isAccessibilityQuestion || activeTool === 'chat') {
+          prompt = `
+Você é um assistente especializado em acessibilidade web (WCAG). Responda à seguinte pergunta do usuário de forma concisa e útil.
+Se a pergunta não parecer ser sobre acessibilidade web, WCAG, ou tópicos diretamente relacionados, informe educadamente que você pode ajudar principalmente com questões de acessibilidade.
+
+Pergunta do usuário: "${message}"
+
+Sua resposta:`;
+        } else {
+          // Se não for uma pergunta de acessibilidade e não for uma modificação de código, cai nos fallbacks.
+          // No entanto, a lógica de activeTool abaixo pode já ter sido tratada, então
+          // este 'else' pode não ser necessário se as respostas contextuais forem suficientes.
+        }
+      }
+
+      if (prompt) {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        return text || "Não consegui processar sua pergunta com a IA Gemini. Tente reformular.";
+      }
+
     } catch (error) {
       console.error("Erro ao chamar a API Gemini:", error);
       return "Desculpe, estou com problemas para me conectar à inteligência artificial no momento. Tente uma pergunta mais simples sobre WCAG ou acessibilidade geral, ou verifique o console para mais detalhes.";
     }
   }
+
 
   // 4. Respostas contextuais baseadas na ferramenta ativa (fallback)
   if (activeTool === 'url') {
